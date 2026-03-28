@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>care.on.line — Ton guide beauté personnalisé par dermo-expert</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
     <style>
         /* ============ ROOT & VARIABLES ============ */
         :root {
@@ -139,6 +140,12 @@
             color: var(--color-white);
         }
 
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
         /* ============ CONTAINER ============ */
         .container {
             max-width: 1200px;
@@ -200,43 +207,41 @@
             opacity: 0;
         }
 
+        @keyframes slideInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+        }
+
         .hero-tagline {
-            font-size: clamp(1.1rem, 2vw, 1.3rem);
-            color: var(--color-muted);
-            font-weight: 300;
-            margin-bottom: var(--spacing-lg);
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            color: var(--color-rose);
+            font-family: var(--font-heading);
+            margin-bottom: var(--spacing-md);
+            font-weight: 500;
             animation: slideInUp 0.8s ease forwards;
             animation-delay: 0.2s;
             opacity: 0;
         }
 
         .hero-subtext {
-            font-size: 1rem;
+            font-size: 1.05rem;
             color: var(--color-light-text);
             margin-bottom: var(--spacing-2xl);
-            max-width: 600px;
+            max-width: 500px;
             line-height: 1.8;
             animation: slideInUp 0.8s ease forwards;
             animation-delay: 0.3s;
             opacity: 0;
         }
 
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         .hero-cta-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-lg);
-            margin-bottom: var(--spacing-3xl);
+            margin-bottom: var(--spacing-2xl);
             animation: slideInUp 0.8s ease forwards;
             animation-delay: 0.4s;
             opacity: 0;
@@ -250,9 +255,7 @@
         .trust-badges {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-sm);
-            font-size: 0.95rem;
-            color: var(--color-muted);
+            gap: var(--spacing-md);
             animation: slideInUp 0.8s ease forwards;
             animation-delay: 0.5s;
             opacity: 0;
@@ -262,204 +265,133 @@
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
+            font-size: 0.95rem;
+            color: var(--color-light-text);
         }
 
-        @media (max-width: 768px) {
-            #hero {
-                min-height: auto;
-                padding: var(--spacing-2xl) 0;
-            }
-
-            .hero-cta-wrapper {
-                flex-direction: column;
-            }
-
-            .btn-cta {
-                width: 100%;
-            }
+        .trust-badge-item span:first-child {
+            font-size: 1.3rem;
         }
 
         /* ============ HOW IT WORKS SECTION ============ */
         #how-it-works {
             background-color: var(--color-white);
-            padding: var(--spacing-3xl) 0;
         }
 
         .steps-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: var(--spacing-3xl);
             margin-top: var(--spacing-2xl);
         }
 
         .step-card {
-            text-align: center;
-            padding: var(--spacing-lg);
+            padding: var(--spacing-2xl);
+            background-color: var(--color-blush);
             border-radius: 8px;
-            background: linear-gradient(135deg, var(--color-cream) 0%, var(--color-blush) 100%);
-            transition: var(--transition-smooth);
-            animation: fadeInUp 0.8s ease forwards;
-            opacity: 0;
-        }
-
-        .step-card:nth-child(1) { animation-delay: 0.1s; }
-        .step-card:nth-child(2) { animation-delay: 0.2s; }
-        .step-card:nth-child(3) { animation-delay: 0.3s; }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .step-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
 
         .step-number {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background-color: var(--color-gold);
             color: var(--color-white);
             border-radius: 50%;
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: var(--spacing-md);
             font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
         }
 
         .step-card h3 {
-            color: var(--color-dark-brown);
             margin-bottom: var(--spacing-sm);
-        }
-
-        .step-card p {
-            color: var(--color-light-text);
-            font-size: 0.95rem;
         }
 
         /* ============ BENEFITS SECTION ============ */
         #benefits {
-            background: linear-gradient(135deg, var(--color-blush) 0%, var(--color-cream) 100%);
-            padding: var(--spacing-3xl) 0;
+            background-color: var(--color-cream);
         }
 
         .benefits-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: var(--spacing-2xl);
             margin-top: var(--spacing-2xl);
         }
 
         .benefit-item {
+            padding: var(--spacing-2xl);
             background-color: var(--color-white);
-            padding: var(--spacing-xl);
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            transition: var(--transition-smooth);
-            animation: fadeInUp 0.8s ease forwards;
-            opacity: 0;
             border-left: 4px solid var(--color-gold);
-        }
-
-        .benefit-item:nth-child(1) { animation-delay: 0.1s; }
-        .benefit-item:nth-child(2) { animation-delay: 0.2s; }
-        .benefit-item:nth-child(3) { animation-delay: 0.3s; }
-        .benefit-item:nth-child(4) { animation-delay: 0.4s; }
-        .benefit-item:nth-child(5) { animation-delay: 0.5s; }
-
-        .benefit-item:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(200, 169, 110, 0.15);
+            border-radius: 4px;
         }
 
         .benefit-item h3 {
             color: var(--color-dark-brown);
-            font-size: 1.2rem;
             margin-bottom: var(--spacing-sm);
-        }
-
-        .benefit-item p {
-            color: var(--color-light-text);
-            font-size: 0.95rem;
-            line-height: 1.7;
         }
 
         /* ============ QUESTIONNAIRE SECTION ============ */
         #questionnaire {
-            display: none;
             background-color: var(--color-white);
-            padding: var(--spacing-3xl) 0;
-            opacity: 0;
-            transition: opacity 0.6s ease;
-        }
-
-        #questionnaire.visible {
-            display: block;
-            opacity: 1;
         }
 
         .questionnaire-wrapper {
-            max-width: 600px;
+            max-width: 700px;
             margin: 0 auto;
         }
 
-        .progress-bar-container {
-            background-color: var(--color-blush);
-            height: 8px;
-            border-radius: 4px;
+        #questionnaire h2 {
             margin-bottom: var(--spacing-2xl);
+        }
+
+        .progress-bar-container {
+            height: 8px;
+            background-color: var(--color-blush);
+            border-radius: 10px;
             overflow: hidden;
+            margin-bottom: var(--spacing-md);
         }
 
         .progress-bar {
-            background: linear-gradient(90deg, var(--color-gold) 0%, var(--color-rose) 100%);
             height: 100%;
+            background-color: var(--color-gold);
             width: 0%;
-            transition: width 0.5s ease;
-            border-radius: 4px;
+            transition: var(--transition-smooth);
         }
 
         .progress-text {
             text-align: center;
-            color: var(--color-muted);
             font-size: 0.9rem;
-            margin-bottom: var(--spacing-lg);
+            color: var(--color-light-text);
+            margin-bottom: var(--spacing-2xl);
         }
 
         .form-step {
             display: none;
-            animation: slideInRight 0.5s ease;
+            animation: fadeIn 0.3s ease;
         }
 
         .form-step.active {
             display: block;
         }
 
-        @keyframes slideInRight {
+        @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateX(20px);
             }
             to {
                 opacity: 1;
-                transform: translateX(0);
             }
         }
 
         .form-step h2 {
-            color: var(--color-dark-brown);
-            margin-bottom: var(--spacing-lg);
-            text-align: center;
+            margin-bottom: var(--spacing-xl);
+            font-size: 1.6rem;
         }
 
         .form-group {
@@ -469,73 +401,77 @@
         .form-group label {
             display: block;
             margin-bottom: var(--spacing-sm);
-            color: var(--color-dark-brown);
             font-weight: 500;
-            font-size: 0.95rem;
+            color: var(--color-dark-brown);
         }
 
-        .form-group input[type="text"],
-        .form-group input[type="email"],
-        .form-group select {
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: var(--spacing-sm);
-            border: 2px solid var(--color-blush);
+            border: 1px solid var(--color-blush);
             border-radius: 4px;
             font-family: var(--font-body);
             font-size: 1rem;
-            color: var(--color-dark-text);
-            transition: border-color 0.3s ease;
+            transition: var(--transition-smooth);
         }
 
-        .form-group input[type="text"]:focus,
-        .form-group input[type="email"]:focus,
-        .form-group select:focus {
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: var(--color-gold);
             box-shadow: 0 0 0 3px rgba(200, 169, 110, 0.1);
         }
 
-        .checkbox-group,
-        .radio-group {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-sm);
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
         }
 
-        .checkbox-item,
-        .radio-item {
+        .checkbox-item {
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
         }
 
-        .checkbox-item input[type="checkbox"],
-        .radio-item input[type="radio"] {
-            width: 18px;
-            height: 18px;
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
             cursor: pointer;
             accent-color: var(--color-gold);
         }
 
-        .checkbox-item label,
-        .radio-item label {
+        .checkbox-item label {
+            margin-bottom: 0;
             cursor: pointer;
-            flex: 1;
-            margin: 0;
-            color: var(--color-light-text);
+            font-weight: 400;
+        }
+
+        .form-error {
+            display: none;
+            color: #d32f2f;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        .form-error.show {
+            display: block;
         }
 
         .form-controls {
             display: flex;
-            gap: var(--spacing-lg);
             justify-content: space-between;
+            gap: var(--spacing-lg);
             margin-top: var(--spacing-2xl);
+            flex-wrap: wrap;
         }
 
         .btn-form {
             flex: 1;
-            padding: var(--spacing-md);
-            font-size: 1rem;
+            min-width: 150px;
         }
 
         .btn-prev {
@@ -544,34 +480,130 @@
         }
 
         .btn-prev:hover {
-            background-color: #e8c8c3;
+            background-color: #e8c4ba;
         }
 
-        .btn-next,
-        .btn-submit {
+        .btn-next {
             background-color: var(--color-gold);
             color: var(--color-white);
         }
 
-        .form-error {
-            color: #d32f2f;
-            font-size: 0.85rem;
-            margin-top: 0.25rem;
+        /* ============ PAYMENT SUMMARY ============ */
+        .payment-summary {
             display: none;
+            background: linear-gradient(135deg, var(--color-blush) 0%, var(--color-cream) 100%);
+            border: 2px solid var(--color-gold);
+            border-radius: 8px;
+            padding: var(--spacing-2xl);
+            margin-top: var(--spacing-2xl);
+            animation: fadeIn 0.3s ease;
         }
 
-        .form-error.show {
+        .payment-summary.show {
             display: block;
+        }
+
+        .payment-summary h2 {
+            font-size: 1.6rem;
+            margin-bottom: var(--spacing-xl);
+            text-align: center;
+            color: var(--color-dark-brown);
+        }
+
+        .payment-summary-content {
+            background-color: var(--color-white);
+            border-radius: 6px;
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-md) 0;
+            border-bottom: 1px solid var(--color-blush);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: var(--color-light-text);
+            font-weight: 500;
+        }
+
+        .summary-value {
+            color: var(--color-dark-brown);
+            font-weight: 600;
+        }
+
+        .summary-price {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-lg) 0;
+            border-top: 2px solid var(--color-blush);
+            margin-top: var(--spacing-lg);
+            font-size: 1.3rem;
+            color: var(--color-dark-brown);
+        }
+
+        .summary-price-label {
+            font-weight: 600;
+        }
+
+        .summary-price-amount {
+            color: var(--color-rose);
+            font-weight: 700;
+        }
+
+        .payment-button-wrapper {
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        #btn-payment {
+            background-color: var(--color-rose);
+            color: var(--color-white);
+            font-size: 1.1rem;
+            padding: var(--spacing-md) var(--spacing-2xl);
+            box-shadow: 0 4px 15px rgba(212, 135, 122, 0.3);
+        }
+
+        #btn-payment:hover {
+            background-color: #c17463;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 135, 122, 0.4);
+        }
+
+        #btn-payment:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .payment-security {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            color: var(--color-muted);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .payment-security-icon {
+            font-size: 1.2rem;
         }
 
         /* ============ SUCCESS MESSAGE ============ */
         .success-message {
             display: none;
             text-align: center;
-            padding: var(--spacing-3xl) var(--spacing-lg);
-            background: linear-gradient(135deg, var(--color-cream) 0%, var(--color-blush) 100%);
+            padding: var(--spacing-2xl);
+            background: linear-gradient(135deg, var(--color-blush) 0%, var(--color-cream) 100%);
             border-radius: 8px;
-            animation: fadeInUp 0.8s ease;
+            border: 2px solid var(--color-gold);
+            animation: fadeIn 0.3s ease;
         }
 
         .success-message.show {
@@ -579,23 +611,21 @@
         }
 
         .success-icon {
-            font-size: 4rem;
-            margin-bottom: var(--spacing-lg);
+            font-size: 3rem;
+            margin-bottom: var(--spacing-md);
         }
 
         .success-message h2 {
             color: var(--color-dark-brown);
-            margin-bottom: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
         }
 
         .success-message p {
-            color: var(--color-light-text);
-            font-size: 1rem;
-            margin-bottom: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
         }
 
         /* ============ FOOTER ============ */
-        #footer {
+        footer {
             background-color: var(--color-dark-brown);
             color: var(--color-white);
             padding: var(--spacing-2xl) 0;
@@ -668,6 +698,18 @@
             .footer-links {
                 flex-direction: column;
                 gap: var(--spacing-md);
+            }
+
+            .form-controls {
+                flex-direction: column;
+            }
+
+            .btn-form {
+                width: 100%;
+            }
+
+            .checkbox-group {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -898,304 +940,104 @@
                             </select>
                             <div class="form-error"></div>
                         </div>
+                    </div>
+
+                    <!-- STEP 3: Tes Préoccupations Beauté -->
+                    <div class="form-step" data-step="3">
+                        <h2>Tes Préoccupations Beauté</h2>
 
                         <div class="form-group">
-                            <label for="rides">Rides et ridules... *</label>
-                            <select id="rides" name="rides" required>
-                                <option value="">-- Sélectionne --</option>
-                                <option value="Pas de rides">Pas de rides</option>
-                                <option value="Ridules naissantes">Ridules naissantes</option>
-                                <option value="Rides naissantes">Rides naissantes</option>
-                                <option value="Rides installées">Rides installées</option>
-                            </select>
-                            <div class="form-error"></div>
+                            <label>Quelle est ta principale préoccupation beauté ? *</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="preoc_acne" name="preoccupations" value="Acné">
+                                    <label for="preoc_acne">Acné</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="preoc_rides" name="preoccupations" value="Rides et ridules">
+                                    <label for="preoc_rides">Rides et ridules</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="preoc_secheresse" name="preoccupations" value="Sécheresse">
+                                    <label for="preoc_secheresse">Sécheresse</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="preoc_taches" name="preoccupations" value="Taches brunes">
+                                    <label for="preoc_taches">Taches brunes</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="preoc_terne" name="preoccupations" value="Teint terne">
+                                    <label for="preoc_terne">Teint terne</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="preoc_sensible" name="preoccupations" value="Peau sensible">
+                                    <label for="preoc_sensible">Peau sensible</label>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="acne">Acné... *</label>
-                            <select id="acne" name="acne" required>
-                                <option value="">-- Sélectionne --</option>
-                                <option value="Pas d'acné">Pas d'acné</option>
-                                <option value="Peau acnéique">Peau acnéique</option>
-                                <option value="Peau à tendance acnéïque">Peau à tendance acnéïque</option>
-                            </select>
-                            <div class="form-error"></div>
+                            <label for="routine_actuelle">Décris brièvement ta routine actuelle (optionnel)</label>
+                            <textarea id="routine_actuelle" name="routine_actuelle" rows="4" placeholder="Ex: Je nettoie avec un gel, j'applique une crème hydratante..."></textarea>
                         </div>
 
                         <div class="form-group">
-                            <label for="reactions_peau">Réactions cutanées au froid, vent... *</label>
-                            <select id="reactions_peau" name="reactions_peau" required>
-                                <option value="">-- Sélectionne --</option>
-                                <option value="Peau non réactive">Peau non réactive</option>
-                                <option value="Peau réactive">Peau réactive</option>
-                                <option value="Peau très réactive">Peau très réactive</option>
-                            </select>
-                            <div class="form-error"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="reaction_sport">Réactions cutanées pendant le sport *</label>
-                            <select id="reaction_sport" name="reaction_sport" required>
-                                <option value="">-- Sélectionne --</option>
-                                <option value="Peau non réactive">Peau non réactive</option>
-                                <option value="Peau réactive">Peau réactive</option>
-                                <option value="Peau très réactive">Peau très réactive</option>
-                            </select>
-                            <div class="form-error"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="hyperpigmentation">Hyperpigmentation (taches brunes...) *</label>
-                            <select id="hyperpigmentation" name="hyperpigmentation" required>
-                                <option value="">-- Sélectionne --</option>
-                                <option value="Oui">Oui</option>
-                                <option value="Non">Non</option>
-                            </select>
-                            <div class="form-error"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="traitement_dermato">Traitement dermatologique en cours *</label>
-                            <select id="traitement_dermato" name="traitement_dermato" required>
-                                <option value="">-- Sélectionne --</option>
-                                <option value="Oui">Oui</option>
-                                <option value="Non">Non</option>
-                            </select>
-                            <div class="form-error"></div>
+                            <label for="sensibilites">Avez-vous des sensibilités ou allergies à certains ingrédients ? (optionnel)</label>
+                            <textarea id="sensibilites" name="sensibilites" rows="4" placeholder="Ex: Parfum, niacinamide..."></textarea>
                         </div>
                     </div>
 
-                    <!-- STEP 3: Ton Mode de Vie -->
-                    <div class="form-step" data-step="3">
-                        <h2>Ton Mode de Vie</h2>
-
-                        <div class="form-group">
-                            <label for="tabac">Tabac *</label>
-                            <select id="tabac" name="tabac" required>
-                                <option value="">-- Sélectionne --</option>
-                                <option value="Non">Non</option>
-                                <option value="Oui occasionnellement">Oui occasionnellement</option>
-                                <option value="Oui régulièrement">Oui régulièrement</option>
-                            </select>
-                            <div class="form-error"></div>
-                        </div>
+                    <!-- STEP 4: Ton Lifestyle -->
+                    <div class="form-step" data-step="4">
+                        <h2>Ton Lifestyle</h2>
 
                         <div class="form-group">
                             <label for="exposition_soleil">Exposition au soleil *</label>
                             <select id="exposition_soleil" name="exposition_soleil" required>
                                 <option value="">-- Sélectionne --</option>
-                                <option value="Faible">Faible</option>
-                                <option value="Moyenne">Moyenne</option>
-                                <option value="Forte">Forte</option>
-                            </select>
-                            <div class="form-error"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="pollution_air">Pollution de l'air *</label>
-                            <select id="pollution_air" name="pollution_air" required>
-                                <option value="">-- Sélectionne --</option>
-                                <option value="Faible">Faible</option>
+                                <option value="Très exposée">Très exposée (travail en extérieur)</option>
                                 <option value="Modérée">Modérée</option>
-                                <option value="Haute">Haute</option>
+                                <option value="Peu exposée">Peu exposée (travail en intérieur)</option>
                             </select>
                             <div class="form-error"></div>
                         </div>
 
                         <div class="form-group">
-                            <label>Autres expositions aggressantes *</label>
-                            <div class="checkbox-group">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="expo_eau_calcaire" name="exposition_autre" value="Eau calcaire">
-                                    <label for="expo_eau_calcaire">Eau calcaire</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="expo_climatisation" name="exposition_autre" value="Climatisation">
-                                    <label for="expo_climatisation">Climatisation</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="expo_chauffage" name="exposition_autre" value="Chauffage électrique">
-                                    <label for="expo_chauffage">Chauffage électrique</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="expo_aucun" name="exposition_autre" value="Aucun">
-                                    <label for="expo_aucun">Aucun</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="stress">Stress *</label>
-                            <select id="stress" name="stress" required>
+                            <label for="stress_niveau">Niveau de stress *</label>
+                            <select id="stress_niveau" name="stress_niveau" required>
                                 <option value="">-- Sélectionne --</option>
-                                <option value="Non">Non</option>
-                                <option value="Par période">Par période</option>
-                                <option value="Oui">Oui</option>
+                                <option value="Bas">Bas</option>
+                                <option value="Modéré">Modéré</option>
+                                <option value="Élevé">Élevé</option>
                             </select>
                             <div class="form-error"></div>
                         </div>
 
                         <div class="form-group">
-                            <label for="sport">Activité sportive *</label>
-                            <select id="sport" name="sport" required>
+                            <label for="sommeil_qualite">Qualité de sommeil *</label>
+                            <select id="sommeil_qualite" name="sommeil_qualite" required>
                                 <option value="">-- Sélectionne --</option>
-                                <option value="Jamais">Jamais</option>
-                                <option value="Une fois par semaine">Une fois par semaine</option>
-                                <option value="Plusieurs fois par semaine">Plusieurs fois par semaine</option>
-                                <option value="Tous les jours">Tous les jours</option>
-                            </select>
-                            <div class="form-error"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="eau">Consommation d'eau *</label>
-                            <select id="eau" name="eau" required>
-                                <option value="">-- Sélectionne --</option>
-                                <option value="Rarement">Rarement</option>
-                                <option value="Quelques verres par jour">Quelques verres par jour</option>
-                                <option value="Plusieurs fois par jour">Plusieurs litres par jour</option>
-                            </select>
-                            <div class="form-error"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="sommeil">Qualité du sommeil *</label>
-                            <select id="sommeil" name="sommeil" required>
-                                <option value="">-- Sélectionne --</option>
-                                <option value="Mauvais">Mauvais</option>
-                                <option value="Moyen">Moyen</option>
-                                <option value="Bien">Bien</option>
                                 <option value="Très bien">Très bien</option>
+                                <option value="Bien">Bien</option>
+                                <option value="Moyen">Moyen</option>
+                                <option value="Difficile">Difficile</option>
                             </select>
                             <div class="form-error"></div>
                         </div>
 
                         <div class="form-group">
-                            <label for="alimentation">Alimentation *</label>
-                            <select id="alimentation" name="alimentation" required>
-                                <option value="">-- Sélectionne --</option>
-                                <option value="Peu équilibré">Peu équilibré</option>
-                                <option value="Équilibré">Équilibré</option>
-                                <option value="Très équilibré">Très équilibré</option>
-                                <option value="Végétarien/Végan">Végétarien/Végan</option>
-                            </select>
-                            <div class="form-error"></div>
+                            <label for="alimentation">Décris ton alimentation (optionnel)</label>
+                            <textarea id="alimentation" name="alimentation" rows="3" placeholder="Ex: Régime équilibré, peu d'eau, beaucoup d'alcool..."></textarea>
                         </div>
                     </div>
 
-                    <!-- STEP 4: Tes Préoccupations -->
-                    <div class="form-step" data-step="4">
-                        <h2>Tes Préoccupations</h2>
-
-                        <div class="form-group">
-                            <label for="premiere_preoccupation">Quelle est ta principale préoccupation beauté ? *</label>
-                            <select id="premiere_preoccupation" name="premiere_preoccupation" required>
-                                <option value="">-- Sélectionne --</option>
-                                <option value="Mon acné">Mon acné</option>
-                                <option value="Mes points noirs/boutons blancs">Mes points noirs/boutons blancs</option>
-                                <option value="Ma peau sèche">Ma peau sèche</option>
-                                <option value="Mes rides et ridules naissantes">Mes rides et ridules naissantes</option>
-                                <option value="Mes rides bien installées">Mes rides bien installées</option>
-                                <option value="Mon teint terne">Mon teint terne</option>
-                                <option value="Mes cernes">Mes cernes</option>
-                                <option value="Mes poches">Mes poches</option>
-                                <option value="Mes rougeurs">Mes rougeurs</option>
-                                <option value="Ma peau qui brille">Ma peau qui brille</option>
-                            </select>
-                            <div class="form-error"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Allergies/Intolérances *</label>
-                            <div class="checkbox-group">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="allergy_parfum" name="allergies" value="Parfum">
-                                    <label for="allergy_parfum">Parfum</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="allergy_he" name="allergies" value="Huiles essentielles">
-                                    <label for="allergy_he">Huiles essentielles</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="allergy_alcool" name="allergies" value="Alcool">
-                                    <label for="allergy_alcool">Alcool</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="allergy_paraben" name="allergies" value="Paraben">
-                                    <label for="allergy_paraben">Paraben</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="allergy_silicone" name="allergies" value="Silicone">
-                                    <label for="allergy_silicone">Silicone</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="allergy_aucune" name="allergies" value="Aucune allergie">
-                                    <label for="allergy_aucune">Aucune allergie</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Ce que tu recherches dans les produits *</label>
-                            <div class="checkbox-group">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="mention_clean" name="mentions" value="Clean">
-                                    <label for="mention_clean">Clean</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="mention_bio" name="mentions" value="Bio">
-                                    <label for="mention_bio">Bio</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="mention_vegan" name="mentions" value="Végan">
-                                    <label for="mention_vegan">Végan</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="mention_cf" name="mentions" value="Cruelty free">
-                                    <label for="mention_cf">Cruelty free</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="mention_france" name="mentions" value="Fabriqué en France">
-                                    <label for="mention_france">Fabriqué en France</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="mention_aucun" name="mentions" value="Pas de préférence">
-                                    <label for="mention_aucun">Pas de préférence</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- STEP 5: Ta Routine Idéale -->
+                    <!-- STEP 5: Tes Préférences Beauté -->
                     <div class="form-step" data-step="5">
-                        <h2>Ta Routine Idéale</h2>
+                        <h2>Tes Préférences Beauté</h2>
 
                         <div class="form-group">
-                            <label for="nombre_produits">Nombre de produits dans ta routine idéale *</label>
-                            <select id="nombre_produits" name="nombre_produits" required>
-                                <option value="">-- Sélectionne --</option>
-                                <option value="3 produits">3 produits</option>
-                                <option value="5 produits">5 produits</option>
-                                <option value="7 produits">7 produits</option>
-                            </select>
-                            <div class="form-error"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Quels rituels beautés ? *</label>
+                            <label>Type de produits que tu utilises *</label>
                             <div class="checkbox-group">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="rituel_creme" name="rituel" value="Une crème">
-                                    <label for="rituel_creme">Une crème</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="rituel_serum" name="rituel" value="Un sérum">
-                                    <label for="rituel_serum">Un sérum</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="rituel_contour" name="rituel" value="Un contour des yeux">
-                                    <label for="rituel_contour">Un contour des yeux</label>
-                                </div>
                                 <div class="checkbox-item">
                                     <input type="checkbox" id="rituel_nettoyant" name="rituel" value="Un nettoyant">
                                     <label for="rituel_nettoyant">Un nettoyant</label>
@@ -1384,6 +1226,46 @@
                     </div>
                 </form>
 
+                <!-- PAYMENT SUMMARY -->
+                <div class="payment-summary" id="payment-summary">
+                    <h2>Récapitulatif</h2>
+
+                    <div class="payment-summary-content">
+                        <div class="summary-row">
+                            <span class="summary-label">Prénom</span>
+                            <span class="summary-value" id="summary-prenom">-</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Nom</span>
+                            <span class="summary-value" id="summary-nom">-</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Email</span>
+                            <span class="summary-value" id="summary-email">-</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Préoccupation principale</span>
+                            <span class="summary-value" id="summary-preoccupation">-</span>
+                        </div>
+
+                        <div class="summary-price">
+                            <span class="summary-price-label">Tarif total</span>
+                            <span class="summary-price-amount">29,00 €</span>
+                        </div>
+                    </div>
+
+                    <div class="payment-button-wrapper">
+                        <button id="btn-payment" class="btn btn-secondary">
+                            Passer au paiement sécurisé — 29 €
+                        </button>
+                    </div>
+
+                    <div class="payment-security">
+                        <span class="payment-security-icon">🔒</span>
+                        <span>Paiement sécurisé par Stripe. Tu seras redirigé vers une page de paiement sécurisée.</span>
+                    </div>
+                </div>
+
                 <!-- SUCCESS MESSAGE -->
                 <div class="success-message" id="success-message">
                     <div class="success-icon">✨</div>
@@ -1417,6 +1299,11 @@
 
     <!-- ============ JAVASCRIPT ============ -->
     <script>
+        // ============ CONFIGURATION ============
+        const API_URL = 'https://careonline-api.onrender.com'; // Backend URL
+        const STRIPE_PUBLIC_KEY = 'pk_live_51MD7skDWsVgQDE2d76phByBEqJtZjPoMz8Je0q2HttiHJuSqY0T79HQSC8wrIfi8IfNGBWG9ZJUEbboToPLwO04800YUNMXqJK';
+        const PRICE_GUIDE = 2900; // Price in cents (29 EUR)
+
         // ============ STATE MANAGEMENT ============
         let currentStep = 1;
         const totalSteps = 6;
@@ -1428,8 +1315,10 @@
         const btnStartQuiz = document.getElementById('btn-start-quiz');
         const btnPrev = document.getElementById('btn-prev');
         const btnNext = document.getElementById('btn-next');
+        const btnPayment = document.getElementById('btn-payment');
         const progressBar = document.getElementById('progress-bar');
         const progressText = document.getElementById('progress-text');
+        const paymentSummary = document.getElementById('payment-summary');
         const successMessage = document.getElementById('success-message');
         const emailConfirmation = document.getElementById('email-confirmation');
 
@@ -1462,6 +1351,8 @@
                 updateProgress();
             }
         });
+
+        btnPayment.addEventListener('click', initiatePayment);
 
         // ============ FORM FUNCTIONS ============
         function showStep(stepNumber) {
@@ -1578,24 +1469,96 @@
         function submitForm() {
             saveStepData(totalSteps);
 
-            // Log form data to console for now (will be replaced with API call)
+            // Log form data to console
             console.log('Form Data:', formData);
 
-            // Store in localStorage for demo purposes
+            // Store in localStorage
             localStorage.setItem('careOnlineFormData', JSON.stringify(formData));
 
-            // Show success message
-            emailConfirmation.textContent = formData.email || 'ton adresse email';
-            form.style.display = 'none';
-            successMessage.classList.add('show');
+            // Update payment summary with form data
+            updatePaymentSummary();
 
-            // Scroll to success message
-            successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Hide form and show payment summary
+            form.style.display = 'none';
+            paymentSummary.classList.add('show');
+
+            // Scroll to payment summary
+            paymentSummary.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        // Initialize
-        showStep(1);
-        updateProgress();
+        function updatePaymentSummary() {
+            const prenom = formData.prenom || '-';
+            const nom = formData.nom || '-';
+            const email = formData.email || '-';
+            const preoccupations = formData.preoccupations || [];
+            const mainConcern = preoccupations.length > 0 ? preoccupations[0] : '-';
+
+            document.getElementById('summary-prenom').textContent = prenom;
+            document.getElementById('summary-nom').textContent = nom;
+            document.getElementById('summary-email').textContent = email;
+            document.getElementById('summary-preoccupation').textContent = mainConcern;
+        }
+
+        // ============ PAYMENT FUNCTIONS ============
+        async function initiatePayment() {
+            const paymentBtn = document.getElementById('btn-payment');
+            paymentBtn.disabled = true;
+            paymentBtn.textContent = 'Redirection en cours...';
+
+            try {
+                const quizData = JSON.parse(localStorage.getItem('careOnlineFormData'));
+
+                const response = await fetch(`${API_URL}/create-checkout-session`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        quiz_data: quizData,
+                        success_url: window.location.origin + '?payment=success',
+                        cancel_url: window.location.origin + '?payment=cancelled'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.checkout_url) {
+                    window.location.href = data.checkout_url;
+                } else {
+                    throw new Error('No checkout URL received');
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                paymentBtn.disabled = false;
+                paymentBtn.textContent = 'Passer au paiement sécurisé — 29 €';
+                alert('Une erreur est survenue. Veuillez réessayer.');
+            }
+        }
+
+        // ============ URL PARAMETER HANDLING ============
+        function checkPaymentStatus() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('payment') === 'success') {
+                // Show success message
+                form.style.display = 'none';
+                paymentSummary.classList.remove('show');
+                paymentSummary.style.display = 'none';
+                successMessage.classList.add('show');
+
+                const savedData = JSON.parse(localStorage.getItem('careOnlineFormData') || '{}');
+                emailConfirmation.textContent = savedData.email || 'ton adresse email';
+
+                successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // ============ INITIALIZATION ============
+        // Check for payment return status on page load
+        checkPaymentStatus();
+
+        // Show first step only if not returning from payment
+        if (!new URLSearchParams(window.location.search).has('payment')) {
+            showStep(1);
+            updateProgress();
+        }
 
         // Handle Enter key to submit form
         form.addEventListener('keypress', (e) => {
