@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>care.on.line — Ton guide beauté personnalisé par dermo-expert</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        :root {
+            --color-black: #1a1a1a;
+            --color-gold: #b8964e;
+            --color-cream: #faf6f1;
+            --color-blush: #f5e0d8;
+            --color-white: #ffffff;
+            --color-gray: #8a8a8a;
+            --color-gray-light: #c5c5c5;
+            --color-border: #e0d8d0;
+            --font-heading: "Cormorant Garamond", serif;
+            --font-body: "Poppins", sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font-body); color: var(--color-black); background-color: var(--color-cream); line-height: 1.6; overflow-x: hidden; }
+
+        /* NAV */
+        .navbar { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 3rem; background-color: var(--color-cream); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; transition: box-shadow 0.3s ease; }
+        .navbar.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.06); background-color: rgba(250,246,241,0.97); backdrop-filter: blur(10px); }
+        .logo { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--color-black); }
+        .logo-text { display: flex; flex-direction: column; line-height: 1; }
+        .logo-care { font-family: var(--font-body); font-weight: 700; font-size: 1.6rem; letter-spacing: 1px; }
+        .logo-online { font-family: var(--font-body); font-weight: 400; font-size: 0.7rem; letter-spacing: 3px; margin-top: 1px; }
+        .logo-dot { width: 8px; height: 8px; background-color: var(--color-black); border-radius: 50%; margin-top: -12px; }
+        .nav-links { display: flex; align-items: center; gap: 2.5rem; list-style: none; }
+        .nav-links a { text-decoration: none; color: var(--color-black); font-size: 0.75rem; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; transition: color 0.3s ease; }
+        .nav-links a:hover { color: var(--color-gold); }
+        .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+        .btn-commencer { background-color: var(--color-black); color: var(--color-white); padding: 0.7rem 1.8rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; border: none; cursor: pointer; text-decoration: none; transition: all 0.3s ease; }
+        .btn-commencer:hover { background-color: #333; transform: translateY(-1px); }
+        .nav-instagram { color: var(--color-black); text-decoration: none; font-size: 1.2rem; transition: color 0.3s ease; }
+        .nav-instagram:hover { color: var(--color-gold); }
+        .nav-instagram svg { width: 22px; height: 22px; }
+        .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+        .nav-toggle span { display: block; width: 24px; height: 2px; background: var(--color-black); margin: 5px 0; transition: 0.3s; }
+        @media (max-width: 1024px) {
+            .nav-links { display: none; }
+            .nav-toggle { display: block; }
+            .navbar { padding: 1rem 1.5rem; }
+            .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: var(--color-cream); padding: 2rem; gap: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        }
+
+        /* HERO */
+        .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 8rem 2rem 4rem; background: linear-gradient(180deg, var(--color-cream) 0%, var(--color-blush) 40%, var(--color-cream) 100%); }
+        .hero-brand { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 2.5rem; }
+        .hero-brand .logo-text { line-height: 1; }
+        .hero-brand .logo-care { font-size: 4rem; font-weight: 700; }
+        .hero-brand .logo-online { font-size: 1.1rem; letter-spacing: 5px; }
+        .hero-brand .logo-dot { width: 14px; height: 14px; margin-top: -20px; }
+        .hero-subtitle { font-family: var(--font-body); font-size: 0.8rem; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; color: var(--color-gold); margin-bottom: 2rem; }
+        .hero h1 { font-family: var(--font-heading); font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 400; line-height: 1.15; color: var(--color-black); margin-bottom: 2rem; }
+        .hero h1 em { font-style: italic; color: var(--color-gold); }
+        .hero-description { max-width: 620px; margin: 0 auto 3rem; font-size: 0.95rem; color: var(--color-gray); line-height: 1.8; }
+        .hero-ctas { display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+        .btn-diagnostic { display: inline-flex; align-items: center; gap: 0.8rem; background-color: var(--color-black); color: var(--color-white); padding: 1.1rem 2.8rem; font-size: 0.8rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; border: none; cursor: pointer; text-decoration: none; transition: all 0.3s ease; }
+        .btn-diagnostic:hover { background-color: #333; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .btn-diagnostic .arrow { font-size: 1.1rem; transition: transform 0.3s ease; }
+        .btn-diagnostic:hover .arrow { transform: translateX(4px); }
+        .btn-guide { color: var(--color-black); font-size: 0.8rem; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none; border-bottom: 1.5px solid var(--color-black); padding-bottom: 3px; transition: all 0.3s ease; }
+        .btn-guide:hover { color: var(--color-gold); border-color: var(--color-gold); }
+
+        /* SCIENCE */
+        .science { padding: 6rem 3rem; background-color: var(--color-cream); }
+        .section-intro { text-align: center; max-width: 700px; margin: 0 auto 4rem; }
+        .section-subtitle { font-size: 0.75rem; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--color-gold); margin-bottom: 1rem; }
+        .section-title { font-family: var(--font-heading); font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 400; color: var(--color-black); margin-bottom: 1.5rem; }
+        .section-text { font-size: 0.9rem; color: var(--color-gray); line-height: 1.8; }
+        .science-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; max-width: 1200px; margin: 0 auto; }
+        .science-card { background: var(--color-white); border-radius: 4px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .science-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.08); }
+        .science-card-img { width: 100%; height: 240px; object-fit: cover; }
+        .science-card-body { padding: 2rem; }
+        .science-card-category { font-size: 0.7rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--color-gold); margin-bottom: 0.8rem; }
+        .science-card-title { font-family: var(--font-heading); font-size: 1.4rem; font-weight: 600; color: var(--color-black); margin-bottom: 1rem; line-height: 1.3; }
+        .science-card-text { font-size: 0.85rem; color: var(--color-gray); line-height: 1.7; }
+        @media (max-width: 768px) { .science-grid { grid-template-columns: 1fr; gap: 2rem; } .science { padding: 4rem 1.5rem; } }
+
+        /* PROCESS */
+        .process { padding: 6rem 3rem; background-color: var(--color-white); }
+        .steps-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem; max-width: 1000px; margin: 0 auto; }
+        .step-item { text-align: center; padding: 2rem; }
+        .step-number { display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border: 2px solid var(--color-gold); border-radius: 50%; font-family: var(--font-heading); font-size: 1.4rem; font-weight: 600; color: var(--color-gold); margin-bottom: 1.5rem; }
+        .step-item h3 { font-family: var(--font-heading); font-size: 1.3rem; font-weight: 600; color: var(--color-black); margin-bottom: 0.8rem; }
+        .step-item p { font-size: 0.85rem; color: var(--color-gray); line-height: 1.7; }
+        @media (max-width: 768px) { .steps-row { grid-template-columns: 1fr; gap: 1rem; } .process { padding: 4rem 1.5rem; } }
+
+        /* TESTIMONIALS */
+        .testimonials { padding: 6rem 3rem; background: linear-gradient(135deg, var(--color-blush) 0%, var(--color-cream) 100%); }
+        .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; max-width: 1100px; margin: 0 auto; }
+        .testimonial-card { background: var(--color-white); border-radius: 4px; padding: 2.5rem; }
+        .testimonial-stars { color: var(--color-gold); font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 1.2rem; }
+        .testimonial-text { font-size: 0.9rem; color: var(--color-gray); line-height: 1.8; margin-bottom: 1.5rem; font-style: italic; }
+        .testimonial-author { font-size: 0.85rem; font-weight: 600; color: var(--color-black); }
+        .testimonial-meta { font-size: 0.75rem; color: var(--color-gray-light); margin-top: 0.3rem; }
+        @media (max-width: 768px) { .testimonials-grid { grid-template-columns: 1fr; } .testimonials { padding: 4rem 1.5rem; } }
+
+        /* ABOUT */
+        .about { padding: 6rem 3rem; background-color: var(--color-white); }
+        .about-content { max-width: 800px; margin: 0 auto; text-align: center; }
+        .about-text { font-size: 0.95rem; color: var(--color-gray); line-height: 1.9; }
+
+        /* FOOTER */
+        .footer { background-color: var(--color-black); color: var(--color-white); padding: 3rem; text-align: center; }
+        .footer-brand { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 1.5rem; }
+        .footer-links { display: flex; justify-content: center; gap: 2rem; margin-bottom: 1.5rem; }
+        .footer-links a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.8rem; letter-spacing: 1px; transition: color 0.3s; }
+        .footer-links a:hover { color: var(--color-white); }
+        .footer-copyright { color: rgba(255,255,255,0.3); font-size: 0.75rem; }
+
+        /* QUESTIONNAIRE */
+        .questionnaire-page { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--color-white); z-index: 2000; overflow-y: auto; }
+        .questionnaire-page.visible { display: block; }
+        .quiz-header { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 3rem; border-bottom: 1px solid var(--color-border); }
+        .quiz-header .logo { transform: scale(0.85); }
+        .quiz-step-indicator { font-size: 0.8rem; font-weight: 500; letter-spacing: 1.5px; color: var(--color-gray); }
+        .quiz-progress-bar { height: 4px; background: var(--color-border); position: relative; }
+        .quiz-progress-fill { height: 100%; background: var(--color-gold); transition: width 0.5s ease; width: 16.66%; }
+        .quiz-tabs { display: flex; padding: 0 3rem; border-bottom: 1px solid var(--color-border); overflow-x: auto; }
+        .quiz-tab { flex: 1; text-align: center; padding: 1rem 0.5rem; font-size: 0.7rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--color-gray-light); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s ease; white-space: nowrap; }
+        .quiz-tab.active { color: var(--color-gold); border-bottom-color: var(--color-gold); }
+        .quiz-tab.completed { color: var(--color-black); }
+        .quiz-body { max-width: 720px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+        .quiz-section-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--color-gold); margin-bottom: 0.5rem; }
+        .quiz-body h2 { font-family: var(--font-heading); font-size: 2.2rem; font-weight: 400; color: var(--color-black); margin-bottom: 0.5rem; }
+        .quiz-body h2 em { font-style: italic; color: var(--color-gold); }
+        .quiz-body .quiz-intro { font-size: 0.9rem; color: var(--color-gray); margin-bottom: 2.5rem; }
+
+        /* Form */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 500; color: var(--color-black); }
+        .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="number"], .form-group select { width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--color-border); border-radius: 4px; font-family: var(--font-body); font-size: 0.9rem; color: var(--color-black); background: var(--color-white); transition: border-color 0.3s ease; }
+        .form-group input::placeholder { color: var(--color-gray-light); }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--color-gold); }
+        .form-error { font-size: 0.8rem; color: #c0392b; margin-top: 0.3rem; display: none; }
+        .form-error.show { display: block; }
+        .form-question { font-family: var(--font-heading); font-size: 1.3rem; font-weight: 500; color: var(--color-black); margin-bottom: 1rem; margin-top: 2rem; }
+        .form-separator { border: none; border-top: 1px solid var(--color-border); margin: 2rem 0; }
+
+        /* Choice buttons */
+        .choice-group { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 1.5rem; }
+        .choice-btn { padding: 0.7rem 1.5rem; border: 1px solid var(--color-border); border-radius: 30px; background: var(--color-white); font-family: var(--font-body); font-size: 0.85rem; color: var(--color-black); cursor: pointer; transition: all 0.3s ease; }
+        .choice-btn:hover { border-color: var(--color-gold); }
+        .choice-btn.selected { background-color: var(--color-black); color: var(--color-white); border-color: var(--color-black); }
+
+        /* Checkbox */
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 1.5rem; }
+        .checkbox-item { display: flex; align-items: center; gap: 0.5rem; }
+        .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--color-gold); cursor: pointer; }
+        .checkbox-item label { font-size: 0.85rem; color: var(--color-black); cursor: pointer; }
+
+        /* Quiz nav */
+        .quiz-nav { display: flex; justify-content: flex-end; margin-top: 2.5rem; gap: 1rem; }
+        .btn-suivant { display: inline-flex; align-items: center; gap: 0.6rem; background-color: var(--color-black); color: var(--color-white); padding: 1rem 2.5rem; font-size: 0.8rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; border: none; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; }
+        .btn-suivant:hover { background-color: #333; transform: translateY(-1px); }
+        .btn-precedent { display: inline-flex; align-items: center; gap: 0.6rem; background-color: transparent; color: var(--color-black); padding: 1rem 2rem; font-size: 0.8rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; border: 1px solid var(--color-border); border-radius: 50px; cursor: pointer; transition: all 0.3s ease; }
+        .btn-precedent:hover { border-color: var(--color-black); }
+
+        .form-step { display: none; }
+        .form-step.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .success-message { display: none; text-align: center; padding: 4rem 2rem; }
+        .success-message.show { display: block; }
+        .success-icon { font-size: 3rem; margin-bottom: 1.5rem; }
+        .success-message h2 { font-family: var(--font-heading); font-size: 2rem; color: var(--color-black); margin-bottom: 1rem; }
+        .success-message p { font-size: 0.95rem; color: var(--color-gray); margin-bottom: 0.5rem; }
+
+        /* PAYMENT SUMMARY */
+        .payment-summary { display: none; max-width: 520px; margin: 0 auto; padding: 3rem 2rem; }
+        .payment-summary.show { display: block; }
+        .payment-summary h2 { font-family: var(--font-heading); font-size: 2rem; color: var(--color-black); margin-bottom: 0.5rem; text-align: center; }
+        .payment-summary .payment-subtitle { font-size: 0.9rem; color: var(--color-gray); text-align: center; margin-bottom: 2rem; }
+        .payment-recap { background: var(--color-cream); border-radius: 8px; padding: 1.8rem; margin-bottom: 2rem; }
+        .payment-recap-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; font-size: 0.9rem; }
+        .payment-recap-row .label { color: var(--color-gray); }
+        .payment-recap-row .value { color: var(--color-black); font-weight: 500; }
+        .payment-recap-row.total { border-top: 2px solid var(--color-border); margin-top: 0.8rem; padding-top: 1rem; }
+        .payment-recap-row.total .label { font-weight: 600; color: var(--color-black); font-size: 1rem; }
+        .payment-recap-row.total .value { font-size: 1.3rem; font-weight: 700; color: var(--color-gold); }
+        .btn-payer { display: block; width: 100%; padding: 1.1rem; background: var(--color-gold); color: var(--color-white); font-family: var(--font-body); font-size: 0.9rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; border: none; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; }
+        .btn-payer:hover { background: #a8803e; transform: translateY(-1px); box-shadow: 0 8px 25px rgba(200,169,110,0.3); }
+        .btn-payer:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .payment-secure { text-align: center; margin-top: 1rem; font-size: 0.8rem; color: var(--color-gray); }
+        .btn-retour-quiz { display: inline-block; margin-top: 1.5rem; text-align: center; width: 100%; font-size: 0.85rem; color: var(--color-gray); text-decoration: underline; cursor: pointer; background: none; border: none; font-family: var(--font-body); }
+
+        .landing-page { display: block; }
+        .landing-page.hidden { display: none; }
+
+        @media (max-width: 768px) {
+            .hero { padding: 7rem 1.5rem 3rem; }
+            .hero-brand .logo-care { font-size: 2.8rem; }
+            .hero-brand .logo-online { font-size: 0.8rem; }
+            .hero h1 { font-size: 2rem; }
+            .hero-ctas { flex-direction: column; gap: 1.5rem; }
+            .quiz-header { padding: 1rem 1.5rem; }
+            .quiz-tabs { padding: 0 1rem; }
+            .quiz-tab { font-size: 0.6rem; padding: 0.8rem 0.3rem; }
+            .quiz-body { padding: 2rem 1.5rem 4rem; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="landing-page" id="landing-page">
+    <nav class="navbar" id="navbar">
+        <a href="#" class="logo">
+            <div class="logo-text"><span class="logo-care">care</span><span class="logo-online">online</span></div>
+            <div class="logo-dot"></div>
+        </a>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="#science">La Science</a></li>
+            <li><a href="#process">Le Processus</a></li>
+            <li><a href="#guide">Le Guide</a></li>
+            <li><a href="#testimonials">Temoignages</a></li>
+            <li><a href="#about">A Propos</a></li>
+        </ul>
+        <div class="nav-right">
+            <a href="#" class="btn-commencer" id="btn-commencer-top">Commencer</a>
+            <a href="https://instagram.com/care.on_line" target="_blank" class="nav-instagram" aria-label="Instagram">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+            </a>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+        </div>
+    </nav>
+
+    <section class="hero" id="hero">
+        <div class="hero-brand">
+            <div class="logo-text"><span class="logo-care">care</span><span class="logo-online">online</span></div>
+            <div class="logo-dot"></div>
+        </div>
+        <div class="hero-subtitle">Diagnostic beaute personnalise</div>
+        <h1>Votre peau merite<br><em>son propre protocole</em></h1>
+        <p class="hero-description">En quelques minutes, obtenez un guide de soins sur-mesure : diagnostic scientifique, routine personnalisee et selection de produits adaptes a votre peau.</p>
+        <div class="hero-ctas">
+            <a href="#" class="btn-diagnostic" id="btn-start-quiz">Faire le diagnostic <span class="arrow">&rarr;</span></a>
+            <a href="#guide" class="btn-guide">Decouvrir le guide</a>
+        </div>
+    </section>
+
+    <section class="science" id="science">
+        <div class="section-intro">
+            <div class="section-subtitle">Notre approche</div>
+            <h2 class="section-title">La science au service de votre peau</h2>
+            <p class="section-text">Notre algorithme croise votre profil unique avec une base de donnees de milliers d'ingredients cosmetiques valides scientifiquement.</p>
+        </div>
+        <div class="science-grid">
+            <div class="science-card">
+                <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=300&fit=crop" alt="Dermatologie" class="science-card-img">
+                <div class="science-card-body">
+                    <div class="science-card-category">Dermatologie</div>
+                    <h3 class="science-card-title">Comprendre votre type de peau</h3>
+                    <p class="science-card-text">80 profils cutanes distincts identifies pour un diagnostic precis. Le type de peau determine 70% de l'efficacite d'un soin.</p>
+                </div>
+            </div>
+            <div class="science-card">
+                <img src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=500&h=300&fit=crop" alt="Actifs" class="science-card-img">
+                <div class="science-card-body">
+                    <div class="science-card-category">Actifs</div>
+                    <h3 class="science-card-title">Retinol, AHA, Niacinamide : ce qui fonctionne</h3>
+                    <p class="science-card-text">Seuls les ingredients cliniquement valides sont recommandes. Chaque actif est evalue selon son efficacite prouvee sur votre profil.</p>
+                </div>
+            </div>
+            <div class="science-card">
+                <img src="https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=500&h=300&fit=crop" alt="Methodologie" class="science-card-img">
+                <div class="science-card-body">
+                    <div class="science-card-category">Methodologie</div>
+                    <h3 class="science-card-title">L'ordre d'application change tout</h3>
+                    <p class="science-card-text">L'ordre et la compatibilite des produits impactent jusqu'a 40% l'absorption des actifs. Notre protocole optimise chaque etape.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="process" id="process">
+        <div class="section-intro">
+            <div class="section-subtitle">Comment ca marche</div>
+            <h2 class="section-title">Trois etapes vers votre routine ideale</h2>
+        </div>
+        <div class="steps-row">
+            <div class="step-item"><div class="step-number">1</div><h3>Repondez au diagnostic</h3><p>6 etapes simples et rapides pour analyser votre peau, votre routine et vos preoccupations beaute.</p></div>
+            <div class="step-item"><div class="step-number">2</div><h3>Analyse personnalisee</h3><p>Notre algorithme croise vos reponses avec des milliers d'ingredients valides pour creer votre protocole unique.</p></div>
+            <div class="step-item"><div class="step-number">3</div><h3>Recevez votre guide</h3><p>Votre guide beaute personnalise vous est envoye par email dans les 24 heures. Disponible a vie.</p></div>
+        </div>
+    </section>
+
+    <section class="about" id="guide" style="background: linear-gradient(135deg, var(--color-blush) 0%, var(--color-cream) 100%);">
+        <div class="about-content">
+            <div class="section-subtitle">Votre guide</div>
+            <h2 class="section-title">Un protocole sur-mesure, pas un simple conseil</h2>
+            <p class="about-text">Votre guide comprend un diagnostic complet de votre peau, une routine matin et soir adaptee a votre profil, une selection de produits dans votre budget, l'ordre d'application optimise et des conseils d'experts pour chaque preoccupation identifiee.</p>
+        </div>
+    </section>
+
+    <section class="testimonials" id="testimonials">
+        <div class="section-intro">
+            <div class="section-subtitle">Temoignages</div>
+            <h2 class="section-title">Elles ont teste care.online</h2>
+        </div>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <p class="testimonial-text">"Mon guide etait vraiment personnalise, pas une routine generique. Les produits recommandes correspondent parfaitement a mes besoins et mon budget."</p>
+                <div class="testimonial-author">Marie L.</div>
+                <div class="testimonial-meta">Peau mixte, 28 ans</div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <p class="testimonial-text">"Enfin quelqu'un qui m'explique pourquoi ma peau reagit comme ca. Le diagnostic est tres complet et les explications claires."</p>
+                <div class="testimonial-author">Sophie D.</div>
+                <div class="testimonial-meta">Peau sensible, 35 ans</div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <p class="testimonial-text">"J'ai decouvert des actifs que je ne connaissais pas du tout et ma peau n'a jamais ete aussi belle. Merci care.online !"</p>
+                <div class="testimonial-author">Camille R.</div>
+                <div class="testimonial-meta">Peau seche, 42 ans</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about" id="about">
+        <div class="about-content">
+            <div class="section-subtitle">A propos</div>
+            <h2 class="section-title">care.online</h2>
+            <p class="about-text">Nous croyons que chaque peau est unique et merite un protocole adapte. Fondee par des passionnes de dermatologie et de cosmetologie, care.online combine science et technologie pour rendre les conseils d'experts accessibles a tous.</p>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-brand">
+            <div class="logo-text"><span class="logo-care" style="color:#fff;font-size:1.4rem;">care</span><span class="logo-online" style="color:rgba(255,255,255,0.5);">online</span></div>
+            <div class="logo-dot" style="background:#fff;width:6px;height:6px;"></div>
+        </div>
+        <div class="footer-links">
+            <a href="https://instagram.com/care.on_line" target="_blank">Instagram @care.on_line</a>
+            <a href="mailto:hello@careonline.fr">Contact</a>
+        </div>
+        <div class="footer-copyright">&copy; 2026 care.online — Tous droits reserves</div>
+    </footer>
+</div>
+
+<div class="questionnaire-page" id="questionnaire-page">
+    <div class="quiz-header">
+        <a href="#" class="logo" id="quiz-logo-back">
+            <div class="logo-text"><span class="logo-care">care</span><span class="logo-online">online</span></div>
+            <div class="logo-dot"></div>
+        </a>
+        <div class="quiz-step-indicator" id="quiz-step-indicator">ETAPE 1 / 6</div>
+    </div>
+    <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quiz-progress-fill"></div></div>
+    <div class="quiz-tabs" id="quiz-tabs">
+        <div class="quiz-tab active" data-tab="1">Mon Profil</div>
+        <div class="quiz-tab" data-tab="2">Mon Visage</div>
+        <div class="quiz-tab" data-tab="3">Mon Mode de Vie</div>
+        <div class="quiz-tab" data-tab="4">Mes Preoccupations</div>
+        <div class="quiz-tab" data-tab="5">Mes Routines</div>
+        <div class="quiz-tab" data-tab="6">Mes Preferences</div>
+    </div>
+
+    <div class="quiz-body">
+        <form id="questionnaire-form">
+            <!-- STEP 1 -->
+            <div class="form-step active" data-step="1">
+                <div class="quiz-section-label">Section 1 &middot; 6</div>
+                <h2>Mon <em>Profil</em></h2>
+                <p class="quiz-intro">Quelques informations pour te connaitre et personnaliser ton guide.</p>
+                <div class="form-row">
+                    <div class="form-group"><input type="text" id="prenom" name="prenom" placeholder="Prenom *" required><div class="form-error"></div></div>
+                    <div class="form-group"><input type="text" id="nom" name="nom" placeholder="Nom"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><input type="email" id="email" name="email" placeholder="Email *" required><div class="form-error"></div></div>
+                    <div class="form-group"><input type="number" id="age" name="age" placeholder="Age *" min="13" max="100" required><div class="form-error"></div></div>
+                </div>
+                <hr class="form-separator">
+                <div class="form-question">Comment tu te definis ?</div>
+                <div class="choice-group" data-name="genre">
+                    <button type="button" class="choice-btn" data-value="homme">Un homme</button>
+                    <button type="button" class="choice-btn" data-value="femme">Une femme</button>
+                    <button type="button" class="choice-btn" data-value="autre">Autre / Prefere ne pas preciser</button>
+                </div>
+            </div>
+
+            <!-- STEP 2 -->
+            <div class="form-step" data-step="2">
+                <div class="quiz-section-label">Section 2 &middot; 6</div>
+                <h2>Mon <em>Visage</em></h2>
+                <p class="quiz-intro">Dis-nous tout sur ta peau pour un diagnostic precis.</p>
+                <div class="form-group"><label for="couleur_peau">Couleur de ta peau *</label><select id="couleur_peau" name="couleur_peau" required><option value="">-- Selectionne --</option><option value="Tres claire">Tres claire</option><option value="Claire">Claire</option><option value="Mediane">Mediane</option><option value="Mate">Mate</option><option value="Foncee">Foncee</option><option value="Tres foncee">Tres foncee</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="couleur_cheveux">Couleur de tes cheveux *</label><select id="couleur_cheveux" name="couleur_cheveux" required><option value="">-- Selectionne --</option><option value="Blond">Blond</option><option value="Chatain">Chatain</option><option value="Roux">Roux</option><option value="Brun">Brun</option><option value="Noir">Noir</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="couleur_yeux">Couleur de tes yeux *</label><select id="couleur_yeux" name="couleur_yeux" required><option value="">-- Selectionne --</option><option value="Bleus">Bleus</option><option value="Verts">Verts</option><option value="Noisettes/Marrons">Noisettes/Marrons</option><option value="Noirs">Noirs</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="apres_bain_soleil">Apres un bain au soleil, ta peau... *</label><select id="apres_bain_soleil" name="apres_bain_soleil" required><option value="">-- Selectionne --</option><option value="Phototype 1">Phototype 1 — Je brule toujours</option><option value="Phototype 2">Phototype 2 — Je brule souvent</option><option value="Phototype 3">Phototype 3 — Je brule parfois</option><option value="Phototype 4">Phototype 4 — Je brule rarement</option><option value="Phototype 5">Phototype 5 — Je ne brule jamais</option><option value="Phototype 6">Phototype 6 — Peau tres foncee</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="apres_creme">Apres l'application d'une creme, ta peau est... *</label><select id="apres_creme" name="apres_creme" required><option value="">-- Selectionne --</option><option value="Peau tres seche">Peau tres seche</option><option value="Peau seche">Peau seche</option><option value="Peau normale">Peau normale</option><option value="Peau mixte">Peau mixte</option><option value="Peau grasse">Peau grasse</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="apres_douche">Apres une douche, ta peau est... *</label><select id="apres_douche" name="apres_douche" required><option value="">-- Selectionne --</option><option value="Peau seche">Peau seche</option><option value="A tendance seche">A tendance seche</option><option value="Peau mixte">Peau mixte</option><option value="Peau grasse">Peau grasse</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="rides">Rides et ridules... *</label><select id="rides" name="rides" required><option value="">-- Selectionne --</option><option value="Pas de rides">Pas de rides</option><option value="Ridules naissantes">Ridules naissantes</option><option value="Rides naissantes">Rides naissantes</option><option value="Rides installees">Rides installees</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="acne">Acne... *</label><select id="acne" name="acne" required><option value="">-- Selectionne --</option><option value="Pas d'acne">Pas d'acne</option><option value="Peau acneique">Peau acneique</option><option value="Peau a tendance acneique">Peau a tendance acneique</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="reactions_peau">Reactions cutanees au froid, vent... *</label><select id="reactions_peau" name="reactions_peau" required><option value="">-- Selectionne --</option><option value="Peau non reactive">Peau non reactive</option><option value="Peau reactive">Peau reactive</option><option value="Peau tres reactive">Peau tres reactive</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="reaction_sport">Reactions cutanees pendant le sport *</label><select id="reaction_sport" name="reaction_sport" required><option value="">-- Selectionne --</option><option value="Peau non reactive">Peau non reactive</option><option value="Peau reactive">Peau reactive</option><option value="Peau tres reactive">Peau tres reactive</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="hyperpigmentation">Hyperpigmentation (taches brunes...) *</label><select id="hyperpigmentation" name="hyperpigmentation" required><option value="">-- Selectionne --</option><option value="Oui">Oui</option><option value="Non">Non</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="traitement_dermato">Traitement dermatologique en cours *</label><select id="traitement_dermato" name="traitement_dermato" required><option value="">-- Selectionne --</option><option value="Oui">Oui</option><option value="Non">Non</option></select><div class="form-error"></div></div>
+            </div>
+
+            <!-- STEP 3 -->
+            <div class="form-step" data-step="3">
+                <div class="quiz-section-label">Section 3 &middot; 6</div>
+                <h2>Mon <em>Mode de Vie</em></h2>
+                <p class="quiz-intro">Ton environnement et tes habitudes influencent ta peau au quotidien.</p>
+                <div class="form-group"><label for="tabac">Tabac *</label><select id="tabac" name="tabac" required><option value="">-- Selectionne --</option><option value="Non">Non</option><option value="Oui occasionnellement">Oui occasionnellement</option><option value="Oui regulierement">Oui regulierement</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="exposition_soleil">Exposition au soleil *</label><select id="exposition_soleil" name="exposition_soleil" required><option value="">-- Selectionne --</option><option value="Faible">Faible</option><option value="Moyenne">Moyenne</option><option value="Forte">Forte</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="pollution_air">Pollution de l'air *</label><select id="pollution_air" name="pollution_air" required><option value="">-- Selectionne --</option><option value="Faible">Faible</option><option value="Moderee">Moderee</option><option value="Haute">Haute</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label>Autres expositions agressantes</label><div class="checkbox-group"><div class="checkbox-item"><input type="checkbox" id="expo_eau_calcaire" name="exposition_autre" value="Eau calcaire"><label for="expo_eau_calcaire">Eau calcaire</label></div><div class="checkbox-item"><input type="checkbox" id="expo_climatisation" name="exposition_autre" value="Climatisation"><label for="expo_climatisation">Climatisation</label></div><div class="checkbox-item"><input type="checkbox" id="expo_chauffage" name="exposition_autre" value="Chauffage electrique"><label for="expo_chauffage">Chauffage electrique</label></div><div class="checkbox-item"><input type="checkbox" id="expo_aucun" name="exposition_autre" value="Aucun"><label for="expo_aucun">Aucun</label></div></div></div>
+                <div class="form-group"><label for="stress">Stress *</label><select id="stress" name="stress" required><option value="">-- Selectionne --</option><option value="Non">Non</option><option value="Par periode">Par periode</option><option value="Oui">Oui</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="sport">Activite sportive *</label><select id="sport" name="sport" required><option value="">-- Selectionne --</option><option value="Jamais">Jamais</option><option value="Une fois par semaine">Une fois par semaine</option><option value="Plusieurs fois par semaine">Plusieurs fois par semaine</option><option value="Tous les jours">Tous les jours</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="eau">Consommation d'eau *</label><select id="eau" name="eau" required><option value="">-- Selectionne --</option><option value="Rarement">Rarement</option><option value="Quelques verres par jour">Quelques verres par jour</option><option value="Plusieurs litres par jour">Plusieurs litres par jour</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="sommeil">Qualite du sommeil *</label><select id="sommeil" name="sommeil" required><option value="">-- Selectionne --</option><option value="Mauvais">Mauvais</option><option value="Moyen">Moyen</option><option value="Bien">Bien</option><option value="Tres bien">Tres bien</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="alimentation">Alimentation *</label><select id="alimentation" name="alimentation" required><option value="">-- Selectionne --</option><option value="Peu equilibre">Peu equilibre</option><option value="Equilibre">Equilibre</option><option value="Tres equilibre">Tres equilibre</option><option value="Vegetarien/Vegan">Vegetarien/Vegan</option></select><div class="form-error"></div></div>
+            </div>
+
+            <!-- STEP 4 -->
+            <div class="form-step" data-step="4">
+                <div class="quiz-section-label">Section 4 &middot; 6</div>
+                <h2>Mes <em>Preoccupations</em></h2>
+                <p class="quiz-intro">Quels sont tes objectifs beaute et tes preoccupations principales ?</p>
+                <div class="form-group"><label for="premiere_preoccupation">Quelle est ta principale preoccupation beaute ? *</label><select id="premiere_preoccupation" name="premiere_preoccupation" required><option value="">-- Selectionne --</option><option value="Mon acne">Mon acne</option><option value="Mes points noirs/boutons blancs">Mes points noirs/boutons blancs</option><option value="Ma peau seche">Ma peau seche</option><option value="Mes rides et ridules naissantes">Mes rides et ridules naissantes</option><option value="Mes rides bien installees">Mes rides bien installees</option><option value="Mon teint terne">Mon teint terne</option><option value="Mes cernes">Mes cernes</option><option value="Mes poches">Mes poches</option><option value="Mes rougeurs">Mes rougeurs</option><option value="Ma peau qui brille">Ma peau qui brille</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label>Allergies/Intolerances</label><div class="checkbox-group"><div class="checkbox-item"><input type="checkbox" id="allergy_parfum" name="allergies" value="Parfum"><label for="allergy_parfum">Parfum</label></div><div class="checkbox-item"><input type="checkbox" id="allergy_he" name="allergies" value="Huiles essentielles"><label for="allergy_he">Huiles essentielles</label></div><div class="checkbox-item"><input type="checkbox" id="allergy_alcool" name="allergies" value="Alcool"><label for="allergy_alcool">Alcool</label></div><div class="checkbox-item"><input type="checkbox" id="allergy_paraben" name="allergies" value="Paraben"><label for="allergy_paraben">Paraben</label></div><div class="checkbox-item"><input type="checkbox" id="allergy_silicone" name="allergies" value="Silicone"><label for="allergy_silicone">Silicone</label></div><div class="checkbox-item"><input type="checkbox" id="allergy_aucune" name="allergies" value="Aucune allergie"><label for="allergy_aucune">Aucune allergie</label></div></div></div>
+                <div class="form-group"><label>Ce que tu recherches dans les produits</label><div class="checkbox-group"><div class="checkbox-item"><input type="checkbox" id="mention_clean" name="mentions" value="Clean"><label for="mention_clean">Clean</label></div><div class="checkbox-item"><input type="checkbox" id="mention_bio" name="mentions" value="Bio"><label for="mention_bio">Bio</label></div><div class="checkbox-item"><input type="checkbox" id="mention_vegan" name="mentions" value="Vegan"><label for="mention_vegan">Vegan</label></div><div class="checkbox-item"><input type="checkbox" id="mention_cf" name="mentions" value="Cruelty free"><label for="mention_cf">Cruelty free</label></div><div class="checkbox-item"><input type="checkbox" id="mention_france" name="mentions" value="Fabrique en France"><label for="mention_france">Fabrique en France</label></div><div class="checkbox-item"><input type="checkbox" id="mention_aucun" name="mentions" value="Pas de preference"><label for="mention_aucun">Pas de preference</label></div></div></div>
+            </div>
+
+            <!-- STEP 5 -->
+            <div class="form-step" data-step="5">
+                <div class="quiz-section-label">Section 5 &middot; 6</div>
+                <h2>Mes <em>Routines</em></h2>
+                <p class="quiz-intro">Decris-nous ta routine ideale et tes preferences de soins.</p>
+                <div class="form-group"><label for="nombre_produits">Nombre de produits dans ta routine ideale *</label><select id="nombre_produits" name="nombre_produits" required><option value="">-- Selectionne --</option><option value="3 produits">3 produits</option><option value="5 produits">5 produits</option><option value="7 produits">7 produits</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label>Quels rituels beautes ?</label><div class="checkbox-group"><div class="checkbox-item"><input type="checkbox" id="rituel_creme" name="rituel" value="Une creme"><label for="rituel_creme">Une creme</label></div><div class="checkbox-item"><input type="checkbox" id="rituel_serum" name="rituel" value="Un serum"><label for="rituel_serum">Un serum</label></div><div class="checkbox-item"><input type="checkbox" id="rituel_contour" name="rituel" value="Un contour des yeux"><label for="rituel_contour">Un contour des yeux</label></div><div class="checkbox-item"><input type="checkbox" id="rituel_nettoyant" name="rituel" value="Un nettoyant"><label for="rituel_nettoyant">Un nettoyant</label></div><div class="checkbox-item"><input type="checkbox" id="rituel_masque" name="rituel" value="Un masque"><label for="rituel_masque">Un masque</label></div><div class="checkbox-item"><input type="checkbox" id="rituel_huile" name="rituel" value="Une huile"><label for="rituel_huile">Une huile</label></div></div></div>
+                <div class="form-group"><label for="rituel_eau">Preferes-tu une routine... *</label><select id="rituel_eau" name="rituel_eau" required><option value="">-- Selectionne --</option><option value="Avec de l'eau">Avec de l'eau (nettoyage a l'eau)</option><option value="Sans eau">Sans eau (oil cleanser, lait...)</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="creme_texture">Texture de creme que tu preferes *</label><select id="creme_texture" name="creme_texture" required><option value="">-- Selectionne --</option><option value="Legere">Legere</option><option value="Fluide">Fluide</option><option value="Onctueuse">Onctueuse</option><option value="Riche">Riche</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="demaquillage_texture">Texture de demaquillant que tu preferes *</label><select id="demaquillage_texture" name="demaquillage_texture" required><option value="">-- Selectionne --</option><option value="Eau micellaire">Eau micellaire</option><option value="Lait">Lait</option><option value="Huile">Huile</option><option value="Gel">Gel</option><option value="Mousse">Mousse</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="maquillage">Portes-tu du maquillage ? *</label><select id="maquillage" name="maquillage" required><option value="">-- Selectionne --</option><option value="Tous les jours">Tous les jours</option><option value="De temps en temps">De temps en temps</option><option value="Rarement">Rarement</option><option value="Jamais">Jamais</option></select><div class="form-error"></div></div>
+            </div>
+
+            <!-- STEP 6 -->
+            <div class="form-step" data-step="6">
+                <div class="quiz-section-label">Section 6 &middot; 6</div>
+                <h2>Mes <em>Preferences</em></h2>
+                <p class="quiz-intro">Derniere etape ! Parle-nous de ton budget et tes habitudes d'achat.</p>
+                <div class="form-group"><label for="budget_nettoyant">Budget pour un nettoyant/demaquillant *</label><select id="budget_nettoyant" name="budget_nettoyant" required><option value="">-- Selectionne --</option><option value="< 10 euros">Moins de 10 &euro;</option><option value="Entre 10 et 29 euros">Entre 10 et 29 &euro;</option><option value="Entre 30 et 69 euros">Entre 30 et 69 &euro;</option><option value="Entre 70 et 100 euros">Entre 70 et 100 &euro;</option><option value="> 100 euros">Plus de 100 &euro;</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="budget_soin_quotidien">Budget pour un soin quotidien (creme, serum...) *</label><select id="budget_soin_quotidien" name="budget_soin_quotidien" required><option value="">-- Selectionne --</option><option value="< 10 euros">Moins de 10 &euro;</option><option value="Entre 10 et 29 euros">Entre 10 et 29 &euro;</option><option value="Entre 30 et 69 euros">Entre 30 et 69 &euro;</option><option value="Entre 70 et 100 euros">Entre 70 et 100 &euro;</option><option value="> 100 euros">Plus de 100 &euro;</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="budget_soin_specifique">Budget pour un soin specifique (masque, contour yeux...) *</label><select id="budget_soin_specifique" name="budget_soin_specifique" required><option value="">-- Selectionne --</option><option value="< 10 euros">Moins de 10 &euro;</option><option value="Entre 10 et 29 euros">Entre 10 et 29 &euro;</option><option value="Entre 30 et 69 euros">Entre 30 et 69 &euro;</option><option value="Entre 70 et 100 euros">Entre 70 et 100 &euro;</option><option value="> 100 euros">Plus de 100 &euro;</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label for="budget_accessoire">Budget pour un accessoire beaute *</label><select id="budget_accessoire" name="budget_accessoire" required><option value="">-- Selectionne --</option><option value="< 10 euros">Moins de 10 &euro;</option><option value="Entre 10 et 29 euros">Entre 10 et 29 &euro;</option><option value="Entre 30 et 69 euros">Entre 30 et 69 &euro;</option><option value="Entre 70 et 100 euros">Entre 70 et 100 &euro;</option><option value="> 100 euros">Plus de 100 &euro;</option></select><div class="form-error"></div></div>
+                <div class="form-group"><label>Ou aimes-tu acheter tes produits ?</label><div class="checkbox-group"><div class="checkbox-item"><input type="checkbox" id="circuit_pharma" name="circuit_achats" value="Parapharmacie/pharmacie"><label for="circuit_pharma">Parapharmacie/pharmacie</label></div><div class="checkbox-item"><input type="checkbox" id="circuit_eshop" name="circuit_achats" value="E-shop"><label for="circuit_eshop">E-shop</label></div><div class="checkbox-item"><input type="checkbox" id="circuit_surface" name="circuit_achats" value="Grande surface"><label for="circuit_surface">Grande surface</label></div><div class="checkbox-item"><input type="checkbox" id="circuit_institut" name="circuit_achats" value="Institut/spa"><label for="circuit_institut">Institut/spa</label></div><div class="checkbox-item"><input type="checkbox" id="circuit_bio" name="circuit_achats" value="Boutique bio"><label for="circuit_bio">Boutique bio</label></div></div></div>
+                <div class="form-group"><label>Ce qui est important pour toi dans un produit</label><div class="checkbox-group"><div class="checkbox-item"><input type="checkbox" id="critere_efficacite" name="criteres" value="L'efficacite du produit"><label for="critere_efficacite">L'efficacite du produit</label></div><div class="checkbox-item"><input type="checkbox" id="critere_composition" name="criteres" value="La composition"><label for="critere_composition">La composition</label></div><div class="checkbox-item"><input type="checkbox" id="critere_prix" name="criteres" value="Le prix"><label for="critere_prix">Le prix</label></div><div class="checkbox-item"><input type="checkbox" id="critere_marque" name="criteres" value="La marque"><label for="critere_marque">La marque</label></div><div class="checkbox-item"><input type="checkbox" id="critere_avis" name="criteres" value="Les avis clients"><label for="critere_avis">Les avis clients</label></div><div class="checkbox-item"><input type="checkbox" id="critere_packaging" name="criteres" value="Le packaging"><label for="critere_packaging">Le packaging</label></div></div></div>
+                <div class="form-group"><label for="marques_preferees">Marques de beaute que tu aimes (optionnel)</label><input type="text" id="marques_preferees" name="marques_preferees" placeholder="Ex: Caudalie, Avene, La Roche-Posay..."></div>
+            </div>
+
+            <div class="quiz-nav" id="quiz-nav">
+                <button type="button" class="btn-precedent" id="btn-prev" style="display:none;">&larr; Precedent</button>
+                <button type="button" class="btn-suivant" id="btn-next">Suivant <span>&rarr;</span></button>
+            </div>
+        </form>
+
+        <div id="payment-summary" class="payment-summary">
+            <h2>Recapitulatif</h2>
+            <p class="payment-subtitle">Verifie tes informations avant de passer au paiement.</p>
+            <div class="payment-recap">
+                <div class="payment-recap-row"><span class="label">Prenom</span><span class="value" id="recap-prenom">—</span></div>
+                <div class="payment-recap-row"><span class="label">Email</span><span class="value" id="recap-email">—</span></div>
+                <div class="payment-recap-row"><span class="label">Preoccupation</span><span class="value" id="recap-preoccupation">—</span></div>
+                <div class="payment-recap-row"><span class="label">Produit</span><span class="value">Guide Beaute Personnalise</span></div>
+                <div class="payment-recap-row total"><span class="label">Total</span><span class="value">29 &euro;</span></div>
+            </div>
+            <button class="btn-payer" id="btn-payer" onclick="initiatePayment()">Passer au paiement securise — 29 &euro;</button>
+            <p class="payment-secure">&#128274; Paiement securise par Stripe</p>
+            <button class="btn-retour-quiz" id="btn-retour-quiz">&#8592; Modifier mes reponses</button>
+        </div>
+
+        <div class="success-message" id="success-message">
+            <div class="success-icon">&#10024;</div>
+            <h2>Merci pour ta commande !</h2>
+            <p>Ton guide beaute personnalise est en cours de preparation.</p>
+            <p>Tu le recevras par email dans les <strong>24 heures</strong>.</p>
+            <p style="margin-top:2rem;font-size:0.85rem;color:var(--color-gray);">Un email de confirmation a ete envoye a <span id="email-confirmation" style="font-weight:600;"></span></p>
+        </div>
+    </div>
+</div>
+
+<script>
+// ===== CONFIG =====
+const API_URL = 'https://careonline-api.onrender.com';
+const STRIPE_PUBLIC_KEY = 'pk_live_51MD7skDWsVgQDE2d76phByBEqJtZjPoMz8Je0q2HttiHJuSqY0T79HQSC8wrIfi8IfNGBWG9ZJUEbboToPLwO04800YUNMXqJK';
+const PRICE_GUIDE = 2900; // 29 EUR in cents
+
+let currentStep = 1;
+const totalSteps = 6;
+const formData = {};
+const landingPage = document.getElementById('landing-page');
+const questionnairePage = document.getElementById('questionnaire-page');
+const form = document.getElementById('questionnaire-form');
+const btnStartQuiz = document.getElementById('btn-start-quiz');
+const btnCommencer = document.getElementById('btn-commencer-top');
+const btnPrev = document.getElementById('btn-prev');
+const btnNext = document.getElementById('btn-next');
+const progressFill = document.getElementById('quiz-progress-fill');
+const stepIndicator = document.getElementById('quiz-step-indicator');
+const successMessage = document.getElementById('success-message');
+const emailConfirmation = document.getElementById('email-confirmation');
+const quizLogoBack = document.getElementById('quiz-logo-back');
+const navbar = document.getElementById('navbar');
+const navToggle = document.getElementById('nav-toggle');
+const navLinks = document.getElementById('nav-links');
+const paymentSummary = document.getElementById('payment-summary');
+
+window.addEventListener('scroll', () => { navbar.classList.toggle('scrolled', window.scrollY > 50); });
+navToggle.addEventListener('click', () => { navLinks.classList.toggle('open'); });
+
+document.querySelectorAll('.choice-group').forEach(group => {
+    group.querySelectorAll('.choice-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            group.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            formData[group.dataset.name] = btn.dataset.value;
+        });
+    });
+});
+
+function openQuiz() {
+    landingPage.classList.add('hidden');
+    questionnairePage.classList.add('visible');
+    document.body.style.overflow = 'auto';
+    window.scrollTo(0, 0);
+}
+
+btnStartQuiz.addEventListener('click', (e) => { e.preventDefault(); openQuiz(); });
+btnCommencer.addEventListener('click', (e) => { e.preventDefault(); openQuiz(); });
+quizLogoBack.addEventListener('click', (e) => { e.preventDefault(); questionnairePage.classList.remove('visible'); landingPage.classList.remove('hidden'); window.scrollTo(0, 0); });
+
+document.querySelectorAll('.quiz-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        const t = parseInt(tab.dataset.tab);
+        if (t <= currentStep) { saveStepData(currentStep); currentStep = t; showStep(currentStep); updateProgress(); }
+    });
+});
+
+btnNext.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (validateStep(currentStep)) {
+        saveStepData(currentStep);
+        if (currentStep < totalSteps) { currentStep++; showStep(currentStep); updateProgress(); }
+        else { submitForm(); }
+    }
+});
+
+btnPrev.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (currentStep > 1) { saveStepData(currentStep); currentStep--; showStep(currentStep); updateProgress(); }
+});
+
+function showStep(n) {
+    document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+    document.querySelector('.form-step[data-step="'+n+'"]').classList.add('active');
+    document.querySelectorAll('.quiz-tab').forEach((tab, i) => {
+        tab.classList.remove('active', 'completed');
+        if (i + 1 === n) tab.classList.add('active');
+        else if (i + 1 < n) tab.classList.add('completed');
+    });
+    btnPrev.style.display = n === 1 ? 'none' : 'inline-flex';
+    btnNext.innerHTML = n === totalSteps ? 'Valider mon profil <span>&rarr;</span>' : 'Suivant <span>&rarr;</span>';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress() {
+    progressFill.style.width = (currentStep / totalSteps * 100) + '%';
+    stepIndicator.textContent = 'ETAPE ' + currentStep + ' / ' + totalSteps;
+}
+
+function validateStep(n) {
+    const step = document.querySelector('.form-step[data-step="'+n+'"]');
+    let valid = true;
+    step.querySelectorAll('[required]').forEach(f => {
+        if (!isFieldValid(f)) { valid = false; showError(f, 'Ce champ est obligatoire'); } else { clearError(f); }
+    });
+    return valid;
+}
+
+function isFieldValid(f) {
+    if (f.type === 'email') return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.value);
+    return f.value.trim() !== '';
+}
+
+function showError(f, msg) {
+    const e = f.parentElement.querySelector('.form-error');
+    if (e) { e.textContent = msg; e.classList.add('show'); f.style.borderColor = '#c0392b'; }
+}
+
+function clearError(f) {
+    const e = f.parentElement.querySelector('.form-error');
+    if (e) { e.classList.remove('show'); f.style.borderColor = ''; }
+}
+
+function saveStepData(n) {
+    const step = document.querySelector('.form-step[data-step="'+n+'"]');
+    step.querySelectorAll('input, select, textarea').forEach(input => {
+        if (input.type === 'checkbox') {
+            if (!formData[input.name]) formData[input.name] = [];
+            if (input.checked && !formData[input.name].includes(input.value)) formData[input.name].push(input.value);
+        } else if (input.type === 'radio') {
+            if (input.checked) formData[input.name] = input.value;
+        } else {
+            formData[input.name] = input.value;
+        }
+    });
+}
+
+function submitForm() {
+    saveStepData(totalSteps);
+    console.log('Form Data:', formData);
+    // Show payment summary
+    document.getElementById('recap-prenom').textContent = formData.prenom || '—';
+    document.getElementById('recap-email').textContent = formData.email || '—';
+    document.getElementById('recap-preoccupation').textContent = formData.premiere_preoccupation || '—';
+    form.style.display = 'none';
+    document.getElementById('quiz-nav').style.display = 'none';
+    paymentSummary.classList.add('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Retour au quiz depuis le recapitulatif
+document.getElementById('btn-retour-quiz').addEventListener('click', () => {
+    paymentSummary.classList.remove('show');
+    form.style.display = 'block';
+    document.getElementById('quiz-nav').style.display = 'flex';
+    currentStep = totalSteps;
+    showStep(currentStep);
+    updateProgress();
+});
+
+// ===== STRIPE PAYMENT =====
+async function initiatePayment() {
+    const btn = document.getElementById('btn-payer');
+    btn.disabled = true;
+    btn.textContent = 'Redirection vers Stripe...';
+
+    try {
+        const response = await fetch(API_URL + '/create-checkout-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: formData.email,
+                prenom: formData.prenom,
+                nom: formData.nom || '',
+                preoccupation: formData.premiere_preoccupation || '',
+                quiz_data: formData
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.checkout_url) {
+            window.location.href = data.checkout_url;
+        } else {
+            throw new Error(data.error || 'Erreur lors de la creation de la session de paiement');
+        }
+    } catch (err) {
+        console.error('Payment error:', err);
+        btn.disabled = false;
+        btn.textContent = 'Passer au paiement securise — 29 \u20ac';
+        alert('Une erreur est survenue. Veuillez reessayer.');
+    }
+}
+
+// ===== URL PARAMS (retour Stripe) =====
+(function checkPaymentReturn() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'success') {
+        landingPage.classList.add('hidden');
+        questionnairePage.classList.add('visible');
+        form.style.display = 'none';
+        document.getElementById('quiz-nav').style.display = 'none';
+        successMessage.classList.add('show');
+        emailConfirmation.textContent = 'ton adresse email';
+        window.history.replaceState({}, '', window.location.pathname);
+    } else if (params.get('payment') === 'cancelled') {
+        landingPage.classList.add('hidden');
+        questionnairePage.classList.add('visible');
+        paymentSummary.classList.add('show');
+        form.style.display = 'none';
+        document.getElementById('quiz-nav').style.display = 'none';
+        window.history.replaceState({}, '', window.location.pathname);
+    }
+})();
+
+showStep(1);
+updateProgress();
+
+form.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT')) { e.preventDefault(); btnNext.click(); }
+});
+</script>
+</body>
+</html>
