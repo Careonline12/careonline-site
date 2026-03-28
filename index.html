@@ -105,21 +105,27 @@
 
         /* ABOUT */
         .about { padding: 6rem 3rem; background-color: var(--color-white); }
-        .about-content { max-width: 1000px; margin: 0 auto; }
-        .about-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 4rem; align-items: center; }
-        .about-photo-wrapper { position: relative; }
-        .about-photo { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 4px; filter: grayscale(10%); transition: filter 0.4s ease; }
+        .about-content { max-width: 1100px; margin: 0 auto; }
+        .about-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 4rem; align-items: start; }
+        .about-photo-wrapper { position: relative; position: sticky; top: 120px; }
+        .about-photo { width: 100%; aspect-ratio: 3/4; object-fit: cover; object-position: center top; border-radius: 4px; filter: grayscale(10%); transition: filter 0.4s ease; }
         .about-photo:hover { filter: grayscale(0%); }
         .about-photo-accent { position: absolute; top: -12px; left: -12px; right: 12px; bottom: 12px; border: 2px solid var(--color-gold); border-radius: 4px; z-index: -1; }
         .about-info { text-align: left; }
-        .about-name { font-family: var(--font-heading); font-size: 2rem; font-weight: 600; color: var(--color-black); margin-bottom: 0.3rem; }
+        .about-name { font-family: var(--font-heading); font-size: 2.2rem; font-weight: 600; color: var(--color-black); margin-bottom: 0.3rem; }
         .about-role { font-size: 0.75rem; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--color-gold); margin-bottom: 2rem; }
         .about-text { font-size: 0.9rem; color: var(--color-gray); line-height: 1.9; margin-bottom: 1.2rem; }
-        .about-signature { font-family: var(--font-heading); font-size: 1.6rem; font-style: italic; color: var(--color-gold); margin-top: 1.5rem; }
+        .about-highlight { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 500; color: var(--color-black); line-height: 1.6; margin-bottom: 1.8rem; font-style: italic; border-left: 3px solid var(--color-gold); padding-left: 1.2rem; }
+        .about-credentials { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1.8rem 0; }
+        .about-credential { display: inline-block; font-size: 0.7rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--color-gold); border: 1px solid var(--color-gold); padding: 0.4rem 1rem; border-radius: 2px; }
+        .about-brands { font-size: 0.85rem; color: var(--color-gray-light); line-height: 1.8; margin-top: 0.5rem; margin-bottom: 1.8rem; }
+        .about-brands strong { color: var(--color-gray); font-weight: 500; }
+        .about-section-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--color-gold); margin-top: 2rem; margin-bottom: 0.8rem; }
+        .about-signature { font-family: var(--font-heading); font-size: 1.6rem; font-style: italic; color: var(--color-gold); margin-top: 2rem; }
         .about-socials { display: flex; gap: 1.2rem; margin-top: 1.5rem; }
         .about-socials a { color: var(--color-gray); text-decoration: none; font-size: 0.75rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; transition: color 0.3s ease; border-bottom: 1px solid transparent; padding-bottom: 2px; }
         .about-socials a:hover { color: var(--color-gold); border-bottom-color: var(--color-gold); }
-        @media (max-width: 768px) { .about-grid { grid-template-columns: 1fr; gap: 2.5rem; } .about-info { text-align: center; } .about-photo-wrapper { max-width: 320px; margin: 0 auto; } .about-socials { justify-content: center; } .about { padding: 4rem 1.5rem; } }
+        @media (max-width: 768px) { .about-grid { grid-template-columns: 1fr; gap: 2.5rem; } .about-info { text-align: center; } .about-highlight { text-align: left; } .about-photo-wrapper { max-width: 320px; margin: 0 auto; position: static; } .about-socials { justify-content: center; } .about-credentials { justify-content: center; } .about { padding: 4rem 1.5rem; } }
 
         /* FOOTER */
         .footer { background-color: var(--color-black); color: var(--color-white); padding: 3rem; text-align: center; }
@@ -388,19 +394,41 @@
             </div>
             <div class="about-grid">
                 <div class="about-photo-wrapper">
-                    <img src="https://careonline.fr/caroline.jpg" alt="Caroline Le Borgne — Fondatrice care.on.line" class="about-photo">
+                    <img src="caroline.jpg" alt="Caroline Le Borgne — Fondatrice care.on.line" class="about-photo">
                     <div class="about-photo-accent"></div>
                 </div>
                 <div class="about-info">
                     <h3 class="about-name">Caroline Le Borgne</h3>
-                    <div class="about-role">Fondatrice &amp; Dermo-experte beaute</div>
-                    <p class="about-text">Passionnee par la beaute et la cosmetologie depuis toujours, j'ai decide de creer care.on.line pour rendre l'expertise dermatologique accessible a toutes. Mon parcours professionnel m'a amenee a evoluer dans des univers exigeants — la tech, la beaute et le food &amp; beverage — ou j'ai appris a concevoir des experiences sur-mesure et a deployer des parcours de formation innovants.</p>
-                    <p class="about-text">Responsable formation de metier, j'ai developpe une approche rigoureuse et pedagogique que j'applique aujourd'hui a la beaute : comprendre votre peau en profondeur, decrypter les actifs cosmetiques avec precision, et vous guider vers une routine qui vous ressemble vraiment.</p>
-                    <p class="about-text">Chaque guide care.on.line est le fruit de cette double expertise : la rigueur scientifique de la dermo-cosmetologie et la precision d'un accompagnement personnalise. Parce que votre peau est unique, elle merite un protocole qui l'est tout autant.</p>
+                    <div class="about-role">Fondatrice &amp; Experte dermo-cosmetique</div>
+
+                    <div class="about-highlight">Diplomee de l'ISIPCA et d'HEC Paris, pres de 20 ans d'experience dans la formation, le management et le retail pour une vingtaine de marques de parfums, maquillages et soins.</div>
+
+                    <p class="about-text">J'ai grandi dans l'univers de la beaute. Apres un BTS Esthetique-Cosmetique puis un diplome de l'ISIPCA (Institut Superieur International de la Parfumerie, de la Cosmetique et de l'Aromatique Alimentaire), j'ai consacre pres de 20 ans a former, encadrer et faire grandir des equipes au sein de maisons prestigieuses.</p>
+
+                    <p class="about-text">De BVLGARI (LVMH) ou j'ai deploye la strategie de formation beaute sur la zone France-Benelux, a PUIG (Paco Rabanne, Prada, Nina Ricci) ou j'ai coordonne les formations pour Sephora et Nocie, en passant par Monoprix ou j'ai encadre une force de vente de 120 maquilleurs — j'ai eu la chance de toucher a toutes les facettes du skincare, du maquillage et du parfum.</p>
+
+                    <p class="about-text">Experte en protocoles de soins visage et corps, j'ai notamment concu des protocoles pour les spas des hotels BVLGARI a Milan et me suis formee au massage signature aupres de Galia Ortega. Cette expertise terrain, combinee a ma formation scientifique, me permet aujourd'hui de decrypter les actifs cosmetiques et de recommander des routines vraiment adaptees a chaque peau.</p>
+
+                    <p class="about-text">Plus recemment, j'ai complete mon parcours avec un Certificat Executive Management a HEC Paris, renforçant ma vision strategique et ma capacite a transformer l'innovation pedagogique en impact mesurable — c'est cette meme rigueur que je mets au service de care.on.line.</p>
+
+                    <div class="about-section-label">Expertise marques</div>
+                    <p class="about-brands"><strong>Soins &amp; Beaute :</strong> Dior, Guerlain, Lancome, Helena Rubinstein, Clarins, Biotherm, L'Oreal Paris, Sunday Riley, Elisabeth Arden, Lancaster</p>
+
+                    <div class="about-credentials">
+                        <span class="about-credential">ISIPCA</span>
+                        <span class="about-credential">HEC Paris</span>
+                        <span class="about-credential">BTS Esthetique</span>
+                        <span class="about-credential">Qualiopi</span>
+                        <span class="about-credential">20 ans d'expertise</span>
+                    </div>
+
+                    <p class="about-text">Avec care.on.line, je mets toute cette experience a votre service : un diagnostic precis, des recommandations fondees sur la science, et un guide personnalise qui vous ressemble. Parce que chaque peau est unique, elle merite un protocole qui l'est tout autant.</p>
+
                     <div class="about-signature">— Caroline</div>
                     <div class="about-socials">
                         <a href="https://instagram.com/care.on_line" target="_blank">Instagram</a>
                         <a href="mailto:hello@careonline.fr">Contact</a>
+                        <a href="https://linkedin.com/in/caroline-leborgne" target="_blank">LinkedIn</a>
                     </div>
                 </div>
             </div>
