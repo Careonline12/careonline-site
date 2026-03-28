@@ -105,8 +105,21 @@
 
         /* ABOUT */
         .about { padding: 6rem 3rem; background-color: var(--color-white); }
-        .about-content { max-width: 800px; margin: 0 auto; text-align: center; }
-        .about-text { font-size: 0.95rem; color: var(--color-gray); line-height: 1.9; }
+        .about-content { max-width: 1000px; margin: 0 auto; }
+        .about-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 4rem; align-items: center; }
+        .about-photo-wrapper { position: relative; }
+        .about-photo { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 4px; filter: grayscale(10%); transition: filter 0.4s ease; }
+        .about-photo:hover { filter: grayscale(0%); }
+        .about-photo-accent { position: absolute; top: -12px; left: -12px; right: 12px; bottom: 12px; border: 2px solid var(--color-gold); border-radius: 4px; z-index: -1; }
+        .about-info { text-align: left; }
+        .about-name { font-family: var(--font-heading); font-size: 2rem; font-weight: 600; color: var(--color-black); margin-bottom: 0.3rem; }
+        .about-role { font-size: 0.75rem; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--color-gold); margin-bottom: 2rem; }
+        .about-text { font-size: 0.9rem; color: var(--color-gray); line-height: 1.9; margin-bottom: 1.2rem; }
+        .about-signature { font-family: var(--font-heading); font-size: 1.6rem; font-style: italic; color: var(--color-gold); margin-top: 1.5rem; }
+        .about-socials { display: flex; gap: 1.2rem; margin-top: 1.5rem; }
+        .about-socials a { color: var(--color-gray); text-decoration: none; font-size: 0.75rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; transition: color 0.3s ease; border-bottom: 1px solid transparent; padding-bottom: 2px; }
+        .about-socials a:hover { color: var(--color-gold); border-bottom-color: var(--color-gold); }
+        @media (max-width: 768px) { .about-grid { grid-template-columns: 1fr; gap: 2.5rem; } .about-info { text-align: center; } .about-photo-wrapper { max-width: 320px; margin: 0 auto; } .about-socials { justify-content: center; } .about { padding: 4rem 1.5rem; } }
 
         /* FOOTER */
         .footer { background-color: var(--color-black); color: var(--color-white); padding: 3rem; text-align: center; }
@@ -222,8 +235,8 @@
             <li><a href="#science">La Science</a></li>
             <li><a href="#process">Le Processus</a></li>
             <li><a href="#guide">Le Guide</a></li>
+            <li><a href="#pricing">Tarif</a></li>
             <li><a href="#testimonials">Temoignages</a></li>
-            <li><a href="#about">A Propos</a></li>
         </ul>
         <div class="nav-right">
             <a href="#" class="btn-commencer" id="btn-commencer-top">Commencer</a>
@@ -243,7 +256,7 @@
         <h1>Votre peau merite<br><em>son propre protocole</em></h1>
         <p class="hero-description">En quelques minutes, obtenez un guide de soins sur-mesure : diagnostic scientifique, routine personnalisee et selection de produits adaptes a votre peau.</p>
         <div class="hero-ctas">
-            <a href="#" class="btn-diagnostic" id="btn-start-quiz">Faire le diagnostic <span class="arrow">&rarr;</span></a>
+            <a href="#" class="btn-diagnostic" id="btn-start-quiz">Faire le diagnostic — 29 &euro; <span class="arrow">&rarr;</span></a>
             <a href="#guide" class="btn-guide">Decouvrir le guide</a>
         </div>
     </section>
@@ -302,6 +315,44 @@
         </div>
     </section>
 
+    <section class="process" id="pricing" style="background: var(--color-cream);">
+        <div class="section-intro">
+            <div class="section-subtitle">Votre investissement</div>
+            <h2 class="section-title">Un guide complet pour 29 &euro;</h2>
+            <p class="section-text">Un prix unique, sans abonnement, pour un guide personnalise que vous gardez a vie.</p>
+        </div>
+        <div style="max-width:560px; margin:0 auto; background:var(--color-white); border-radius:8px; padding:3rem; box-shadow:0 4px 20px rgba(0,0,0,0.06);">
+            <div style="text-align:center; margin-bottom:2rem;">
+                <div style="font-family:var(--font-heading); font-size:3.5rem; font-weight:600; color:var(--color-gold);">29 &euro;</div>
+                <div style="font-size:0.85rem; color:var(--color-gray); margin-top:0.3rem;">Paiement unique &middot; Sans engagement</div>
+            </div>
+            <div style="border-top:1px solid var(--color-border); padding-top:1.5rem;">
+                <div style="display:flex; align-items:flex-start; gap:0.8rem; margin-bottom:1rem;">
+                    <span style="color:var(--color-gold); font-size:1.1rem;">&#10003;</span>
+                    <span style="font-size:0.9rem; color:var(--color-black);">Diagnostic complet de votre type de peau</span>
+                </div>
+                <div style="display:flex; align-items:flex-start; gap:0.8rem; margin-bottom:1rem;">
+                    <span style="color:var(--color-gold); font-size:1.1rem;">&#10003;</span>
+                    <span style="font-size:0.9rem; color:var(--color-black);">Routine matin et soir personnalisee</span>
+                </div>
+                <div style="display:flex; align-items:flex-start; gap:0.8rem; margin-bottom:1rem;">
+                    <span style="color:var(--color-gold); font-size:1.1rem;">&#10003;</span>
+                    <span style="font-size:0.9rem; color:var(--color-black);">Selection de produits adaptes a votre budget</span>
+                </div>
+                <div style="display:flex; align-items:flex-start; gap:0.8rem; margin-bottom:1rem;">
+                    <span style="color:var(--color-gold); font-size:1.1rem;">&#10003;</span>
+                    <span style="font-size:0.9rem; color:var(--color-black);">Ordre d'application optimise des soins</span>
+                </div>
+                <div style="display:flex; align-items:flex-start; gap:0.8rem; margin-bottom:1.5rem;">
+                    <span style="color:var(--color-gold); font-size:1.1rem;">&#10003;</span>
+                    <span style="font-size:0.9rem; color:var(--color-black);">Guide PDF envoye par email sous 24h</span>
+                </div>
+            </div>
+            <a href="#" class="btn-diagnostic" id="btn-start-quiz-pricing" style="display:flex; justify-content:center; width:100%; border-radius:50px;">Commencer mon diagnostic <span class="arrow">&rarr;</span></a>
+            <div style="text-align:center; margin-top:1rem; font-size:0.8rem; color:var(--color-gray);">&#128274; Paiement securise par Stripe</div>
+        </div>
+    </section>
+
     <section class="testimonials" id="testimonials">
         <div class="section-intro">
             <div class="section-subtitle">Temoignages</div>
@@ -331,9 +382,28 @@
 
     <section class="about" id="about">
         <div class="about-content">
-            <div class="section-subtitle">A propos</div>
-            <h2 class="section-title">care.online</h2>
-            <p class="about-text">Nous croyons que chaque peau est unique et merite un protocole adapte. Fondee par des passionnes de dermatologie et de cosmetologie, care.online combine science et technologie pour rendre les conseils d'experts accessibles a tous.</p>
+            <div class="section-intro" style="margin-bottom: 3.5rem;">
+                <div class="section-subtitle">A propos</div>
+                <h2 class="section-title">La personne derriere care.on.line</h2>
+            </div>
+            <div class="about-grid">
+                <div class="about-photo-wrapper">
+                    <img src="https://careonline.fr/caroline.jpg" alt="Caroline Le Borgne — Fondatrice care.on.line" class="about-photo">
+                    <div class="about-photo-accent"></div>
+                </div>
+                <div class="about-info">
+                    <h3 class="about-name">Caroline Le Borgne</h3>
+                    <div class="about-role">Fondatrice &amp; Dermo-experte beaute</div>
+                    <p class="about-text">Passionnee par la beaute et la cosmetologie depuis toujours, j'ai decide de creer care.on.line pour rendre l'expertise dermatologique accessible a toutes. Mon parcours professionnel m'a amenee a evoluer dans des univers exigeants — la tech, la beaute et le food &amp; beverage — ou j'ai appris a concevoir des experiences sur-mesure et a deployer des parcours de formation innovants.</p>
+                    <p class="about-text">Responsable formation de metier, j'ai developpe une approche rigoureuse et pedagogique que j'applique aujourd'hui a la beaute : comprendre votre peau en profondeur, decrypter les actifs cosmetiques avec precision, et vous guider vers une routine qui vous ressemble vraiment.</p>
+                    <p class="about-text">Chaque guide care.on.line est le fruit de cette double expertise : la rigueur scientifique de la dermo-cosmetologie et la precision d'un accompagnement personnalise. Parce que votre peau est unique, elle merite un protocole qui l'est tout autant.</p>
+                    <div class="about-signature">— Caroline</div>
+                    <div class="about-socials">
+                        <a href="https://instagram.com/care.on_line" target="_blank">Instagram</a>
+                        <a href="mailto:hello@careonline.fr">Contact</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -543,6 +613,8 @@ function openQuiz() {
 
 btnStartQuiz.addEventListener('click', (e) => { e.preventDefault(); openQuiz(); });
 btnCommencer.addEventListener('click', (e) => { e.preventDefault(); openQuiz(); });
+const btnPricing = document.getElementById('btn-start-quiz-pricing');
+if (btnPricing) btnPricing.addEventListener('click', (e) => { e.preventDefault(); openQuiz(); });
 quizLogoBack.addEventListener('click', (e) => { e.preventDefault(); questionnairePage.classList.remove('visible'); landingPage.classList.remove('hidden'); window.scrollTo(0, 0); });
 
 document.querySelectorAll('.quiz-tab').forEach(tab => {
